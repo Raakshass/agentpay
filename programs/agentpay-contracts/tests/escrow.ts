@@ -102,6 +102,17 @@ describe("escrow", () => {
     )[0];
   }
 
+  type ChannelHandle = {
+    agent: Keypair;
+    gateway: Keypair;
+    providerAcc: Keypair;
+    channelId: Buffer;
+    deposit: number;
+    channel: PublicKey;
+    vault: PublicKey;
+    agentAta: PublicKey;
+  };
+
   /**
    * Spin up a fresh channel funded with `depositUsdc` USDC. Returns every handle
    * the settle/refund paths need.
@@ -109,7 +120,7 @@ describe("escrow", () => {
   async function openChannel(opts: {
     depositUsdc: number;
     timeoutSeconds: number;
-  }) {
+  }): Promise<ChannelHandle> {
     const agent = Keypair.generate();
     const gateway = Keypair.generate();
     const providerAcc = Keypair.generate();
@@ -164,7 +175,7 @@ describe("escrow", () => {
   }
 
   /** Build the settle accounts object for a given channel handle. */
-  function settleAccounts(h: Awaited<ReturnType<typeof openChannel>>) {
+  function settleAccounts(h: ChannelHandle) {
     const providerAta = getAssociatedTokenAddressSync(
       usdcMint,
       h.providerAcc.publicKey
