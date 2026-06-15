@@ -1,11 +1,17 @@
 [toolchain]
+# Use the installed anchor-cli (1.0.2) directly; do not delegate to avm.
 
 [features]
 resolution = true
 skip-lint = false
 
 [programs.localnet]
-agentpay_contracts = "DxtBFwg7sLRHaWBgnxE2HLrG7A1yKPQTBZ8He13wAVdt"
+escrow = "N9J67nThvRxeLHr7VTnpcvTX49qttu3QHtew86FTccS"
+registry = "jGKPeCDKNCxe4B8B3utPjv1MjuowGUj7KvTp4GqjK6B"
+
+[programs.devnet]
+escrow = "N9J67nThvRxeLHr7VTnpcvTX49qttu3QHtew86FTccS"
+registry = "jGKPeCDKNCxe4B8B3utPjv1MjuowGUj7KvTp4GqjK6B"
 
 [registry]
 url = "https://api.apr.dev"
