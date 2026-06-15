@@ -14,21 +14,42 @@ import * as ed25519 from "@noble/ed25519";
 import type { SignedIou } from "./session-manager.js";
 import { logger } from "../utilities/logger.js";
 
+/** Length of a channel id, matching the contract's `channel_id: [u8; 32]`. */
+const CHANNEL_ID_LEN = 32;
+
+/** Total signed-message length: channel_id (32) + cumulative_amount (8). */
+const IOU_MESSAGE_LEN = 40;
+
 /**
- * Serialize an IOU to the canonical byte format used for signing.
- * Both the SDK (signer) and gateway (verifier) must use this exact
- * serialization. The contract (brine-ed25519) will also verify
- * against this same byte format during settlement.
+ * Serialize an IOU to the exact bytes signed off-chain and verified on-chain:
+ *
+ *   message = channel_id (32 bytes) || cumulative_amount (u64 LE, 8 bytes)
+ *
+ * `iou.session` MUST be the Base58-encoded 32-byte `channel_id` used when the
+ * channel was opened (the contract's `channel.channel_id`). `requestCount` and
+ * `timestamp` are off-chain bookkeeping only and are deliberately excluded —
+ * the contract neither stores nor verifies them.
+ *
+ * MUST produce byte-identical output to the SDK's serializeIou and to the
+ * contract's reconstructed message (verified there via brine-ed25519).
  */
 export function serializeIouForSigning(iou: SignedIou): Uint8Array {
-  const iouString = JSON.stringify({
-    session: iou.session,
-    cumulative_usdc: iou.cumulativeUsdc,
-    request_count: iou.requestCount,
-    timestamp: iou.timestamp,
-  });
+  const message = new Uint8Array(IOU_MESSAGE_LEN);
+  message.set(decodeBase58PublicKey(iou.session), 0);
 
-  return new TextEncoder().encode(iouString);
+  let amount = BigInt(iou.cumulativeUsdc);
+  if (amount < BigInt(0)) {
+    throw new Error("cumulativeUsdc must be non-negative");
+  }
+  for (let i = 0; i < 8; i++) {
+    message[CHANNEL_ID_LEN + i] = Number(amount & BigInt(0xff));
+    amount = amount >> BigInt(8);
+  }
+  if (amount !== BigInt(0)) {
+    throw new Error("cumulativeUsdc exceeds u64 range");
+  }
+
+  return message;
 }
 
 /**

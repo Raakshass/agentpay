@@ -18,16 +18,20 @@
 import { logger } from "../utilities/logger.js";
 
 export interface SignedIou {
-  /** Base58 escrow PDA address */
+  /**
+   * Base58-encoded 32-byte `channel_id` (the contract's `channel.channel_id`),
+   * NOT the channel PDA address. This is the value the signature is verified
+   * against on-chain.
+   */
   session: string;
 
   /** Cumulative USDC spent in atomic units (monotonically increasing) */
   cumulativeUsdc: number;
 
-  /** Total number of API requests made in this session */
+  /** Total API requests made in this session. Off-chain only — NOT signed. */
   requestCount: number;
 
-  /** Unix timestamp when this IOU was signed */
+  /** Unix timestamp when this IOU was signed. Off-chain only — NOT signed. */
   timestamp: number;
 }
 
