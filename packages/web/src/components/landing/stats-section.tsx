@@ -2,7 +2,7 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import { StatCounter } from "@/components/ui/stat-counter";
-import { fadeInUp, staggerContainer, formatNumber } from "@/lib/motion";
+import { fadeInUp, staggerContainer } from "@/lib/motion";
 
 /**
  * MOCK DATA: These values are placeholders.
