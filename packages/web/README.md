@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# @agentpay/web
 
-## Getting Started
+The AgentPay marketing site + dApp — a dark, monochromatic frontend for the
+permissionless agent payment protocol on Solana. Built with Next.js 16 (App
+Router), Tailwind v4, Framer Motion, and the Solana wallet adapter.
 
-First, run the development server:
+## Pages
+
+| Route        | What it does |
+|--------------|--------------|
+| `/`          | Landing page — hero, problem, how-it-works, stats, CTA |
+| `/catalog`   | Browse on-chain providers (search + filter), detail drawer |
+| `/providers` | Wallet-gated dashboard — register, edit price, toggle active, deregister |
+| `/demo`      | Live payment visualization (simulated by default) |
+
+## Running locally
+
+Requires Node 18+ and `pnpm`. From the **repo root** (the package is part of the
+pnpm workspace):
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
+cp packages/web/.env.example packages/web/.env.local   # then edit if needed
+pnpm --filter @agentpay/web dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+> **No contracts required to explore.** If the registry program isn't deployed
+> (or is empty) on the configured cluster, the catalog and stats fall back to
+> clearly-labeled demo data, and the live demo runs in simulated mode. Connect a
+> wallet and use the provider dashboard to send real transactions once the
+> programs are deployed.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Configuration
 
-## Learn More
+All config lives in [`src/lib/config.ts`](src/lib/config.ts), driven by the
+`NEXT_PUBLIC_*` env vars documented in [`.env.example`](.env.example):
 
-To learn more about Next.js, take a look at the following resources:
+- `NEXT_PUBLIC_SOLANA_NETWORK` / `NEXT_PUBLIC_RPC_URL` — cluster + RPC
+- `NEXT_PUBLIC_REGISTRY_PROGRAM_ID` / `NEXT_PUBLIC_ESCROW_PROGRAM_ID` — programs
+- `NEXT_PUBLIC_USDC_MINT` — pricing/settlement mint
+- `NEXT_PUBLIC_GATEWAY_URL` — gateway HTTP base (used in catalog snippets)
+- `NEXT_PUBLIC_GATEWAY_WS_URL` — optional; live demo streams real events when set
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## How on-chain data works
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+There's no generated IDL in this package, so
+[`src/lib/registry-client.ts`](src/lib/registry-client.ts) reads `ApiProvider`
+accounts straight from the RPC (manual borsh decode matching
+`programs/registry/src/lib.rs`) and builds `register` / `update` / `deregister`
+instructions by hand. Writes are signed through the connected wallet.
 
-## Deploy on Vercel
+## Scripts
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+pnpm --filter @agentpay/web dev      # dev server (Turbopack)
+pnpm --filter @agentpay/web build    # production build
+pnpm --filter @agentpay/web start    # serve the production build
+pnpm --filter @agentpay/web lint     # ESLint
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deploy (Vercel)
+
+Set the project root to `packages/web`, add the `NEXT_PUBLIC_*` env vars, and
+deploy. The default build command (`next build`) works as-is.
