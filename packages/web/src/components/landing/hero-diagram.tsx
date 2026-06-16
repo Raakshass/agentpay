@@ -13,6 +13,9 @@ export function HeroDiagram() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // Client-only mount guard to render the animated SVG after hydration and
+    // avoid an animation flash during SSR.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 

@@ -35,11 +35,12 @@ export function useRegistry(): UseRegistryResult {
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
-    setError(null);
 
-    getProviders(connection)
-      .then((onChain) => {
+    const load = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const onChain = await getProviders(connection);
         if (cancelled) return;
         if (onChain.length > 0) {
           setProviders(onChain);
@@ -49,16 +50,19 @@ export function useRegistry(): UseRegistryResult {
           setProviders(MOCK_PROVIDERS);
           setUsingMock(true);
         }
-      })
-      .catch((e: unknown) => {
+      } catch (e: unknown) {
         if (cancelled) return;
         setProviders(MOCK_PROVIDERS);
         setUsingMock(true);
-        setError(e instanceof Error ? e.message : "Failed to read the registry");
-      })
-      .finally(() => {
+        setError(
+          e instanceof Error ? e.message : "Failed to read the registry",
+        );
+      } finally {
         if (!cancelled) setLoading(false);
-      });
+      }
+    };
+
+    void load();
 
     return () => {
       cancelled = true;

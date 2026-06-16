@@ -30,30 +30,31 @@ export function useWalletProviders(): UseWalletProvidersResult {
   const refresh = useCallback(() => setNonce((n) => n + 1), []);
 
   useEffect(() => {
-    if (!publicKey) {
-      setProviders([]);
-      setError(null);
-      return;
-    }
-
     let cancelled = false;
-    setLoading(true);
-    setError(null);
 
-    getProvidersByOwner(publicKey, connection)
-      .then((owned) => {
+    const load = async () => {
+      if (!publicKey) {
+        setProviders([]);
+        setError(null);
+        return;
+      }
+      setLoading(true);
+      setError(null);
+      try {
+        const owned = await getProvidersByOwner(publicKey, connection);
         if (!cancelled) setProviders(owned);
-      })
-      .catch((e: unknown) => {
+      } catch (e: unknown) {
         if (cancelled) return;
         setProviders([]);
         setError(
           e instanceof Error ? e.message : "Failed to read your providers",
         );
-      })
-      .finally(() => {
+      } finally {
         if (!cancelled) setLoading(false);
-      });
+      }
+    };
+
+    void load();
 
     return () => {
       cancelled = true;

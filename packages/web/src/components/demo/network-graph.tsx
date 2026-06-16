@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
   DEMO_AGENTS,
@@ -21,28 +21,13 @@ function column(count: number): number[] {
 const AGENT_Y = column(DEMO_AGENTS.length);
 const PROVIDER_Y = column(DEMO_PROVIDERS.length);
 
-interface Pulse {
-  id: string;
-  agent: number;
-  provider: number;
-}
-
 interface NetworkGraphProps {
   latest: DemoEvent | null;
 }
 
 export function NetworkGraph({ latest }: NetworkGraphProps) {
   const prefersReducedMotion = useReducedMotion();
-  const [pulses, setPulses] = useState<Pulse[]>([]);
   const [hitProvider, setHitProvider] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (!latest || prefersReducedMotion) return;
-    setPulses((prev) => [
-      ...prev,
-      { id: latest.id, agent: latest.agent, provider: latest.provider },
-    ]);
-  }, [latest, prefersReducedMotion]);
 
   return (
     <div className="rounded-xl border border-border bg-bg-card p-4">
@@ -77,35 +62,38 @@ export function NetworkGraph({ latest }: NetworkGraphProps) {
           )),
         )}
 
-        {/* Animated payment pulses */}
+        {/* Animated payment pulse — one in flight for the latest event. Driven
+            straight off the prop via AnimatePresence (keyed by event id) so no
+            effect/state sync is needed. */}
         <AnimatePresence>
-          {pulses.map((p) => (
+          {latest && !prefersReducedMotion && (
             <motion.circle
-              key={p.id}
+              key={latest.id}
               r={4}
               fill="#D8E7F2"
               filter="url(#node-glow)"
               initial={{
                 cx: AGENT_X,
-                cy: AGENT_Y[p.agent],
+                cy: AGENT_Y[latest.agent],
                 opacity: 0,
               }}
               animate={{
                 cx: PROVIDER_X,
-                cy: PROVIDER_Y[p.provider],
+                cy: PROVIDER_Y[latest.provider],
                 opacity: [0, 1, 1, 0],
               }}
               transition={{ duration: 1.4, ease: EASE_OUT }}
               onAnimationStart={() => {
                 // Light up the destination shortly before arrival.
-                setTimeout(() => setHitProvider(p.provider), 1100);
+                setTimeout(() => setHitProvider(latest.provider), 1100);
               }}
               onAnimationComplete={() => {
-                setPulses((prev) => prev.filter((x) => x.id !== p.id));
-                setHitProvider((cur) => (cur === p.provider ? null : cur));
+                setHitProvider((cur) =>
+                  cur === latest.provider ? null : cur,
+                );
               }}
             />
-          ))}
+          )}
         </AnimatePresence>
 
         {/* Agent nodes */}

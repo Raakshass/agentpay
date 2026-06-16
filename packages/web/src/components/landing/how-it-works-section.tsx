@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { PillLabel } from "@/components/ui/pill-label";
-import { EASE_OUT, DURATION } from "@/lib/motion";
+import { EASE_OUT } from "@/lib/motion";
 
 const steps = [
   {
