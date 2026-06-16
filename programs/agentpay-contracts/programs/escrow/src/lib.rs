@@ -293,7 +293,9 @@ pub struct OpenChannel<'info> {
 
 #[derive(Accounts)]
 pub struct Settle<'info> {
-    /// Only the channel's recorded gateway may settle.
+    /// Only the channel's recorded gateway may settle. Marked `mut` because it
+    /// is the rent payer for the `init_if_needed` provider/agent token accounts.
+    #[account(mut)]
     pub gateway: Signer<'info>,
 
     #[account(
