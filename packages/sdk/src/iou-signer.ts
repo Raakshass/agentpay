@@ -95,15 +95,18 @@ export async function signIou(
 /**
  * Build a new IOU for the next API request.
  * Increments request count and adds the service price to cumulative usage.
+ *
+ * `channelId` is the Base58-encoded raw 32-byte channel identifier
+ * (NOT the PDA address). This is what the contract verifies.
  */
 export function buildNextIou(
-  sessionPda: string,
+  channelId: string,
   currentUsageAtomic: number,
   currentRequestCount: number,
   servicePriceAtomic: number
 ): IouMessage {
   return {
-    session: sessionPda,
+    session: channelId,
     cumulativeUsdc: currentUsageAtomic + servicePriceAtomic,
     requestCount: currentRequestCount + 1,
     timestamp: Math.floor(Date.now() / 1000),

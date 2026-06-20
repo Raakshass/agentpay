@@ -92,10 +92,10 @@ export function createSessionGateMiddleware(options: SessionGateOptions) {
       return;
     }
 
-    // --- Validate IOU session matches ---
-    if (iou.session !== sessionPda) {
+    // --- Validate IOU session matches the channel id ---
+    if (iou.session !== session.channelId) {
       response.status(400).json({
-        error: { message: "IOU session does not match X-SESSION header", code: "SESSION_MISMATCH" },
+        error: { message: "IOU session (channelId) does not match the registered channel", code: "CHANNEL_MISMATCH" },
       });
       return;
     }

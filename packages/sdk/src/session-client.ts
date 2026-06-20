@@ -8,9 +8,16 @@
  *
  * Usage:
  * ```typescript
- * const session = await AgentPaySession.open(gatewayUrl, sessionPda, wallet, depositAtomic);
+ * const session = await AgentPaySession.open({
+ *   gatewayUrl: "http://localhost:4020",
+ *   sessionPda: "<base58 PDA>",
+ *   channelId: "<base58 channel_id>",
+ *   agentPrivateKey: secretKey,
+ *   agentPublicKey: "<base58 pubkey>",
+ *   providerPublicKey: "<base58 provider>",
+ *   depositAmountAtomic: 10_000_000,
+ * });
  * const weather = await session.fetch("/api/depin-weather/london", 1000);
- * const price = await session.fetch("/api/birdeye-token-price/SOL_ADDRESS", 1000);
  * const result = await session.close();
  * ```
  */
@@ -31,8 +38,8 @@ function bytesToBase64(bytes: Uint8Array): string {
   return btoa(binary);
 }
 
-/** Encodes bytes to Base58 (Solana standard) */
-function bytesToBase58(bytes: Uint8Array): string {
+/** Encodes raw bytes to Base58 (Solana standard). */
+export function bytesToBase58(bytes: Uint8Array): string {
   const ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 
   let value = BigInt(0);
@@ -59,6 +66,27 @@ function bytesToBase58(bytes: Uint8Array): string {
   return result;
 }
 
+/** Parameters for opening a new session. */
+export interface OpenSessionParams {
+  /** Base URL of the gateway (e.g., http://localhost:4020) */
+  gatewayUrl: string;
+  /** Base58 escrow PDA address from the deposit transaction */
+  sessionPda: string;
+  /**
+   * Raw 32-byte channel_id used when calling open_channel on-chain.
+   * Pass as Uint8Array (will be base58-encoded) or base58 string.
+   */
+  channelId: Uint8Array | string;
+  /** Agent's 32-byte ed25519 private key (seed) */
+  agentPrivateKey: Uint8Array;
+  /** Agent's Base58 public key */
+  agentPublicKey: string;
+  /** Base58 provider public key (receives settled funds) */
+  providerPublicKey: string;
+  /** USDC deposited in atomic units */
+  depositAmountAtomic: number;
+}
+
 export class AgentPaySession {
   private readonly gatewayUrl: string;
   private readonly agentPrivateKey: Uint8Array;
@@ -78,25 +106,24 @@ export class AgentPaySession {
    * Open a session with the gateway.
    *
    * Prerequisites: The agent must have already deposited USDC on-chain
-   * via the escrow contract's open_session instruction.
-   *
-   * @param gatewayUrl - Base URL of the gateway (e.g., http://localhost:4020)
-   * @param sessionPda - Base58 escrow PDA address from the deposit transaction
-   * @param agentPrivateKey - Agent's 32-byte ed25519 private key
-   * @param agentPublicKey - Agent's Base58 public key
-   * @param depositAmountAtomic - USDC deposited in atomic units
+   * via the escrow contract's `open_channel` instruction.
    */
-  static async open(
-    gatewayUrl: string,
-    sessionPda: string,
-    agentPrivateKey: Uint8Array,
-    agentPublicKey: string,
-    depositAmountAtomic: number
-  ): Promise<AgentPaySession> {
-    const response = await fetch(`${gatewayUrl}/session/open`, {
+  static async open(params: OpenSessionParams): Promise<AgentPaySession> {
+    const channelIdBase58 =
+      typeof params.channelId === "string"
+        ? params.channelId
+        : bytesToBase58(params.channelId);
+
+    const response = await fetch(`${params.gatewayUrl}/session/open`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sessionPda, agentPublicKey, depositAmountAtomic }),
+      body: JSON.stringify({
+        sessionPda: params.sessionPda,
+        channelId: channelIdBase58,
+        agentPublicKey: params.agentPublicKey,
+        providerPublicKey: params.providerPublicKey,
+        depositAmountAtomic: params.depositAmountAtomic,
+      }),
     });
 
     if (!response.ok) {
@@ -110,21 +137,23 @@ export class AgentPaySession {
 
     const state: SessionState = {
       sessionPda: sessionResponse.sessionPda,
-      agentPublicKey,
+      channelId: channelIdBase58,
+      agentPublicKey: params.agentPublicKey,
+      providerPublicKey: params.providerPublicKey,
       depositAmountAtomic: sessionResponse.depositAmountAtomic,
       currentUsageAtomic: 0,
       requestCount: 0,
       isActive: true,
     };
 
-    return new AgentPaySession(gatewayUrl, agentPrivateKey, state);
+    return new AgentPaySession(params.gatewayUrl, params.agentPrivateKey, state);
   }
 
   /**
    * Make an authenticated API call through the gateway.
    *
-   * Automatically signs a new IOU with the updated cumulative amount
-   * and attaches it to the request via headers.
+   * Automatically signs a new IOU (over channelId, not PDA) with the
+   * updated cumulative amount and attaches it via headers.
    *
    * @param endpoint - API path (e.g., "/api/depin-weather/london")
    * @param servicePriceAtomic - Price per request in atomic USDC (from catalog)
@@ -144,9 +173,9 @@ export class AgentPaySession {
       );
     }
 
-    // Build the next IOU with incremented cumulative usage
+    // Build the next IOU — channelId goes into IOU.session for signing
     const iou = buildNextIou(
-      this.state.sessionPda,
+      this.state.channelId,
       this.state.currentUsageAtomic,
       this.state.requestCount,
       servicePriceAtomic

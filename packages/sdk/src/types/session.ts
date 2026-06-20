@@ -36,11 +36,21 @@ export interface IouMessage {
 
 /** Session state as tracked by the SDK client */
 export interface SessionState {
-  /** Base58 escrow PDA address */
+  /** Base58 escrow PDA address (used for session routing) */
   sessionPda: string;
+
+  /**
+   * Base58-encoded raw 32-byte channel identifier.
+   * This is the value used when signing IOUs — NOT the PDA.
+   * The contract verifies signatures against this value.
+   */
+  channelId: string;
 
   /** Agent's Base58 public key */
   agentPublicKey: string;
+
+  /** Base58 provider public key */
+  providerPublicKey: string;
 
   /** Total USDC deposited in atomic units */
   depositAmountAtomic: number;

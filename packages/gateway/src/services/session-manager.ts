@@ -36,11 +36,22 @@ export interface SignedIou {
 }
 
 export interface ActiveSession {
-  /** Base58 escrow PDA address (also the session identifier) */
+  /** Base58 escrow PDA address (used for session lookup) */
   sessionPda: string;
+
+  /**
+   * Base58-encoded raw 32-byte channel identifier.
+   * This is the value the agent chose when calling `open_channel` on-chain.
+   * It is NOT the PDA — it is one of the PDA seeds.
+   * IOU messages are signed over: channel_id (32) || cumulative (8 LE).
+   */
+  channelId: string;
 
   /** Agent's Base58 public key */
   agentPublicKey: string;
+
+  /** Base58 provider public key (receives settled funds) */
+  providerPublicKey: string;
 
   /** Total USDC deposited in atomic units */
   depositAmountAtomic: number;
@@ -65,7 +76,9 @@ const activeSessions = new Map<string, ActiveSession>();
  */
 export function registerSession(
   sessionPda: string,
+  channelId: string,
   agentPublicKey: string,
+  providerPublicKey: string,
   depositAmountAtomic: number
 ): ActiveSession {
   if (activeSessions.has(sessionPda)) {
@@ -74,7 +87,9 @@ export function registerSession(
 
   const session: ActiveSession = {
     sessionPda,
+    channelId,
     agentPublicKey,
+    providerPublicKey,
     depositAmountAtomic,
     latestIou: null,
     latestIouSignature: null,
