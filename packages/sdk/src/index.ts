@@ -4,7 +4,8 @@
  * Everything an AI agent needs to consume paid APIs via state channels.
  */
 
-export { AgentPaySession } from "./session-client.js";
+export { AgentPaySession, bytesToBase58 } from "./session-client.js";
+export type { OpenSessionParams } from "./session-client.js";
 export { fetchCatalog, findService } from "./catalog-client.js";
 export { signIou, buildNextIou, serializeIou } from "./iou-signer.js";
 

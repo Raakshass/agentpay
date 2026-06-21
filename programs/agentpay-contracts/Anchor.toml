@@ -4,15 +4,19 @@
 resolution = true
 skip-lint = false
 
-[programs.localnet]
-agentpay_contracts = "DxtBFwg7sLRHaWBgnxE2HLrG7A1yKPQTBZ8He13wAVdt"
+[programs.devnet]
+escrow = "8vH1iEpbwe31WGqSGd9a8qkKh7SCHW8MsaSULVsxskRw"
+registry = "XGXadfKb7mru5wcr1yUZWSeBLVUY6NFDAriBUUMiLbk"
 
-[registry]
-url = "https://api.apr.dev"
+[programs.localnet]
+escrow = "8vH1iEpbwe31WGqSGd9a8qkKh7SCHW8MsaSULVsxskRw"
+registry = "XGXadfKb7mru5wcr1yUZWSeBLVUY6NFDAriBUUMiLbk"
 
 [provider]
-cluster = "Localnet"
+cluster = "localnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
+
+[hooks]

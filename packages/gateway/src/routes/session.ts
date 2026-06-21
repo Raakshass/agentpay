@@ -27,16 +27,18 @@ export function registerSessionRoutes(application: Express): void {
    * For MVP, we trust the agent's claim and verify lazily.
    */
   application.post("/session/open", (request, response) => {
-    const { sessionPda, agentPublicKey, depositAmountAtomic } = request.body as {
+    const { sessionPda, channelId, agentPublicKey, providerPublicKey, depositAmountAtomic } = request.body as {
       sessionPda?: string;
+      channelId?: string;
       agentPublicKey?: string;
+      providerPublicKey?: string;
       depositAmountAtomic?: number;
     };
 
-    if (!sessionPda || !agentPublicKey || !depositAmountAtomic) {
+    if (!sessionPda || !channelId || !agentPublicKey || !providerPublicKey || !depositAmountAtomic) {
       response.status(400).json({
         error: {
-          message: "Missing required fields: sessionPda, agentPublicKey, depositAmountAtomic",
+          message: "Missing required fields: sessionPda, channelId, agentPublicKey, providerPublicKey, depositAmountAtomic",
           code: "MISSING_FIELDS",
         },
       });
@@ -54,7 +56,7 @@ export function registerSessionRoutes(application: Express): void {
     }
 
     try {
-      const session = registerSession(sessionPda, agentPublicKey, depositAmountAtomic);
+      const session = registerSession(sessionPda, channelId, agentPublicKey, providerPublicKey, depositAmountAtomic);
 
       response.status(201).json({
         status: "active",

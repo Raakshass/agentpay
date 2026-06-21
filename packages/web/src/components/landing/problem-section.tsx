@@ -1,0 +1,70 @@
+"use client";
+
+import { motion, useReducedMotion } from "framer-motion";
+import { CreditCard, Clock, Lock } from "lucide-react";
+import { SectionHeading } from "@/components/ui/section-heading";
+import { PillLabel } from "@/components/ui/pill-label";
+import { Card } from "@/components/ui/card";
+import { fadeInUp, staggerContainer } from "@/lib/motion";
+
+const problems = [
+  {
+    icon: CreditCard,
+    title: "No credit cards",
+    description:
+      "Autonomous agents don't have identities, bank accounts, or credit cards. Traditional payment rails are built for humans.",
+  },
+  {
+    icon: Clock,
+    title: "Subscriptions don't fit",
+    description:
+      "Agents spin up, make 3 API calls, and shut down. Monthly subscriptions waste money on idle capacity.",
+  },
+  {
+    icon: Lock,
+    title: "Walled gardens",
+    description:
+      "Closed platforms lock agents into specific providers. There's no open marketplace where any agent can pay any API.",
+  },
+];
+
+export function ProblemSection() {
+  const prefersReducedMotion = useReducedMotion();
+
+  return (
+    <section className="py-24 bg-bg-lifted" aria-label="Problem">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <SectionHeading
+          pill={<PillLabel icon="◆" label="THE PROBLEM" />}
+          before="Agents can't hold"
+          emphasis="credit cards."
+          subtitle="The entire payments stack was built for humans with identities and bank accounts. Autonomous software needs something fundamentally different."
+        />
+
+        <motion.div
+          variants={staggerContainer}
+          initial={prefersReducedMotion ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6"
+        >
+          {problems.map((problem) => (
+            <motion.div key={problem.title} variants={fadeInUp}>
+              <Card hoverable={false} className="p-8 h-full">
+                <div className="w-12 h-12 rounded-xl bg-white/5 border border-border flex items-center justify-center mb-6">
+                  <problem.icon className="w-5 h-5 text-accent" />
+                </div>
+                <h3 className="text-lg font-semibold text-text-primary mb-3">
+                  {problem.title}
+                </h3>
+                <p className="text-sm text-text-muted leading-relaxed">
+                  {problem.description}
+                </p>
+              </Card>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+}

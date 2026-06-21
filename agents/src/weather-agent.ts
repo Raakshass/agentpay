@@ -18,7 +18,9 @@ const GATEWAY_URL = "http://localhost:4020";
 // Simulated agent wallet (replace with real keypair for devnet)
 const MOCK_AGENT_PRIVATE_KEY = new Uint8Array(32).fill(1); // DO NOT use in production
 const MOCK_AGENT_PUBLIC_KEY = "SimulatedAgentPublicKey11111111111111111111";
+const MOCK_PROVIDER_PUBLIC_KEY = "SimulatedProviderPubKey11111111111111111111";
 const MOCK_SESSION_PDA = "SimulatedSessionPda111111111111111111111111";
+const MOCK_CHANNEL_ID = "SimulatedChannelId1111111111111111111111111";
 const MOCK_DEPOSIT_ATOMIC = 10_000_000; // 10 USDC
 
 async function runWeatherAgent(): Promise<void> {
@@ -33,16 +35,16 @@ async function runWeatherAgent(): Promise<void> {
   }
 
   // Step 2: Open a session
-  // In production, the agent would first call the escrow contract's open_session
-  // instruction to deposit USDC on-chain, then pass the resulting PDA here.
   console.log("\nOpening session...");
-  const session = await AgentPaySession.open(
-    GATEWAY_URL,
-    MOCK_SESSION_PDA,
-    MOCK_AGENT_PRIVATE_KEY,
-    MOCK_AGENT_PUBLIC_KEY,
-    MOCK_DEPOSIT_ATOMIC
-  );
+  const session = await AgentPaySession.open({
+    gatewayUrl: GATEWAY_URL,
+    sessionPda: MOCK_SESSION_PDA,
+    channelId: MOCK_CHANNEL_ID,
+    agentPrivateKey: MOCK_AGENT_PRIVATE_KEY,
+    agentPublicKey: MOCK_AGENT_PUBLIC_KEY,
+    providerPublicKey: MOCK_PROVIDER_PUBLIC_KEY,
+    depositAmountAtomic: MOCK_DEPOSIT_ATOMIC,
+  });
   console.log(`Session opened. Balance: ${session.getRemainingBalance()} atomic USDC`);
 
   // Step 3: Make multiple API calls
