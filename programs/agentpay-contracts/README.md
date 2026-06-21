@@ -8,8 +8,8 @@ Two Anchor programs live in this workspace:
 
 | Program    | Program ID                                     | Purpose                                    |
 | ---------- | ---------------------------------------------- | ------------------------------------------ |
-| `escrow`   | `N9J67nThvRxeLHr7VTnpcvTX49qttu3QHtew86FTccS`  | State-channel deposit / settle / refund    |
-| `registry` | `jGKPeCDKNCxe4B8B3utPjv1MjuowGUj7KvTp4GqjK6B`  | On-chain catalog of API/agent/DePIN providers |
+| `escrow`   | `8vH1iEpbwe31WGqSGd9a8qkKh7SCHW8MsaSULVsxskRw`  | State-channel deposit / settle / refund    |
+| `registry` | `XGXadfKb7mru5wcr1yUZWSeBLVUY6NFDAriBUUMiLbk`  | On-chain catalog of API/agent/DePIN providers |
 
 USDC is modeled as a standard SPL token with **6 decimals**. All on-chain
 amounts are atomic units (`1 USDC = 1_000_000`).

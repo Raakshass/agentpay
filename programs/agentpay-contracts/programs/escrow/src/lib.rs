@@ -31,7 +31,7 @@ use anchor_spl::{
     token::{close_account, transfer, CloseAccount, Mint, Token, TokenAccount, Transfer},
 };
 
-declare_id!("N9J67nThvRxeLHr7VTnpcvTX49qttu3QHtew86FTccS");
+declare_id!("8vH1iEpbwe31WGqSGd9a8qkKh7SCHW8MsaSULVsxskRw");
 
 /// Lower bound for `timeout_seconds`. This is a minimal on-chain sanity floor
 /// (rejects zero/negative). The gateway is expected to additionally refuse to
@@ -77,7 +77,7 @@ pub mod escrow {
         // Move the deposit from the agent into the vault.
         transfer(
             CpiContext::new(
-                ctx.accounts.token_program.to_account_info(),
+                ctx.accounts.token_program.key(),
                 Transfer {
                     from: ctx.accounts.agent_token_account.to_account_info(),
                     to: ctx.accounts.vault.to_account_info(),
@@ -134,7 +134,7 @@ pub mod escrow {
         if cumulative_amount > 0 {
             transfer(
                 CpiContext::new_with_signer(
-                    ctx.accounts.token_program.to_account_info(),
+                    ctx.accounts.token_program.key(),
                     Transfer {
                         from: ctx.accounts.vault.to_account_info(),
                         to: ctx.accounts.provider_token_account.to_account_info(),
@@ -150,7 +150,7 @@ pub mod escrow {
         if refund_amount > 0 {
             transfer(
                 CpiContext::new_with_signer(
-                    ctx.accounts.token_program.to_account_info(),
+                    ctx.accounts.token_program.key(),
                     Transfer {
                         from: ctx.accounts.vault.to_account_info(),
                         to: ctx.accounts.agent_token_account.to_account_info(),
@@ -164,7 +164,7 @@ pub mod escrow {
 
         // Empty vault — close it and return its rent to the agent.
         close_account(CpiContext::new_with_signer(
-            ctx.accounts.token_program.to_account_info(),
+            ctx.accounts.token_program.key(),
             CloseAccount {
                 account: ctx.accounts.vault.to_account_info(),
                 destination: ctx.accounts.agent.to_account_info(),
@@ -203,7 +203,7 @@ pub mod escrow {
         if amount > 0 {
             transfer(
                 CpiContext::new_with_signer(
-                    ctx.accounts.token_program.to_account_info(),
+                    ctx.accounts.token_program.key(),
                     Transfer {
                         from: ctx.accounts.vault.to_account_info(),
                         to: ctx.accounts.agent_token_account.to_account_info(),
@@ -216,7 +216,7 @@ pub mod escrow {
         }
 
         close_account(CpiContext::new_with_signer(
-            ctx.accounts.token_program.to_account_info(),
+            ctx.accounts.token_program.key(),
             CloseAccount {
                 account: ctx.accounts.vault.to_account_info(),
                 destination: ctx.accounts.agent.to_account_info(),

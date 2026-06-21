@@ -13,10 +13,10 @@ export const config = {
     process.env.NEXT_PUBLIC_RPC_URL || "https://api.devnet.solana.com",
   registryProgramId:
     process.env.NEXT_PUBLIC_REGISTRY_PROGRAM_ID ||
-    "jGKPeCDKNCxe4B8B3utPjv1MjuowGUj7KvTp4GqjK6B",
+    "XGXadfKb7mru5wcr1yUZWSeBLVUY6NFDAriBUUMiLbk",
   escrowProgramId:
     process.env.NEXT_PUBLIC_ESCROW_PROGRAM_ID ||
-    "N9J67nThvRxeLHr7VTnpcvTX49qttu3QHtew86FTccS",
+    "8vH1iEpbwe31WGqSGd9a8qkKh7SCHW8MsaSULVsxskRw",
   usdcMint:
     process.env.NEXT_PUBLIC_USDC_MINT ||
     "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
