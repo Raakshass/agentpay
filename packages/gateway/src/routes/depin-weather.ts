@@ -50,7 +50,7 @@ async function handleWeatherRequest(
 
   response.json({
     source: "depin-weather-network",
-    provider: "agentpay",
+    provider: "conduit",
     timestamp: new Date().toISOString(),
     data: upstreamResponse.data,
   });

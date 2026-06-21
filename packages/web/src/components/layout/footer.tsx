@@ -8,16 +8,16 @@ const footerLinks = {
     { label: "Live Demo", href: "/demo" },
   ],
   resources: [
-    { label: "Documentation", href: "https://docs.agentpay.dev", external: true },
-    { label: "SDK on npm", href: "https://www.npmjs.com/package/@agentpay/sdk", external: true },
+    { label: "Documentation", href: "https://docs.conduit.dev", external: true },
+    { label: "SDK on npm", href: "https://www.npmjs.com/package/@conduit/sdk", external: true },
     { label: "GitHub", href: "https://github.com/agentpay", external: true },
   ],
 };
 
 const socialLinks = [
   { label: "GitHub", href: "https://github.com/agentpay", icon: Github },
-  { label: "Docs", href: "https://docs.agentpay.dev", icon: BookOpen },
-  { label: "npm", href: "https://www.npmjs.com/package/@agentpay/sdk", icon: Package },
+  { label: "Docs", href: "https://docs.conduit.dev", icon: BookOpen },
+  { label: "npm", href: "https://www.npmjs.com/package/@conduit/sdk", icon: Package },
 ];
 
 export function Footer() {
@@ -31,7 +31,7 @@ export function Footer() {
               <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center">
                 <span className="text-black text-xs font-bold">AP</span>
               </div>
-              AgentPay
+              Conduit
             </Link>
             <p className="mt-4 text-text-muted text-sm leading-relaxed max-w-md">
               The permissionless payment layer for autonomous AI agents.
@@ -97,7 +97,7 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="mt-12 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-text-dim">
-            © {new Date().getFullYear()} AgentPay. Built on Solana.
+            © {new Date().getFullYear()} Conduit. Built on Solana.
           </p>
           <p className="text-xs text-text-dim">
             Devnet by default · Mainnet via env var

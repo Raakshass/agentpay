@@ -16,7 +16,7 @@ async function startGatewayServer(): Promise<void> {
   const host = environmentConfig.gateway.host;
 
   application.listen(port, host, () => {
-    logger.info(`AgentPay Gateway running on http://${host}:${port}`);
+    logger.info(`Conduit Gateway running on http://${host}:${port}`);
     logger.info(`Network: ${environmentConfig.solana.network}`);
     logger.info(`Catalog: GET /catalog`);
     logger.info(`Session: POST /session/open`);

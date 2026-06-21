@@ -25,7 +25,7 @@ export function registerCatalogRoutes(application: Express): void {
     }));
 
     response.json({
-      protocol: "agentpay",
+      protocol: "conduit",
       version: "0.1.0",
       paymentModel: "state-channel",
       network: `solana-${environmentConfig.solana.network}`,

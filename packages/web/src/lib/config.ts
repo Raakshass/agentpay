@@ -1,5 +1,5 @@
 /**
- * AgentPay Frontend — Centralized Configuration
+ * Conduit Frontend — Centralized Configuration
  *
  * All network addresses, program IDs, and environment-specific settings.
  * Switch between devnet and mainnet via NEXT_PUBLIC_SOLANA_NETWORK.

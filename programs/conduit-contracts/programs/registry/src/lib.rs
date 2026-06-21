@@ -1,4 +1,4 @@
-//! AgentPay Registry
+//! Conduit Registry
 //!
 //! A permissionless on-chain catalog of API / DePIN / agent providers. Each
 //! provider is stored in its own PDA derived from the owner and the provider

@@ -1,6 +1,6 @@
-# @agentpay/sdk
+# @conduit/sdk
 
-TypeScript SDK for AI agents to consume paid Web3 / DePIN APIs over [AgentPay](../../README.md) state channels.
+TypeScript SDK for AI agents to consume paid Web3 / DePIN APIs over [Conduit](../../README.md) state channels.
 
 The SDK handles the hard parts of the payment protocol for you:
 
@@ -18,13 +18,13 @@ The SDK handles the hard parts of the payment protocol for you:
 Inside the monorepo it's a workspace dependency:
 
 ```json
-{ "dependencies": { "@agentpay/sdk": "workspace:*" } }
+{ "dependencies": { "@conduit/sdk": "workspace:*" } }
 ```
 
 Standalone:
 
 ```bash
-pnpm add @agentpay/sdk
+pnpm add @conduit/sdk
 ```
 
 The only runtime dependency is [`@noble/ed25519`](https://github.com/paulmillr/noble-ed25519). Requires an environment with `fetch`, `btoa`, and `TextEncoder` (Node ≥ 20 or any modern browser).
@@ -34,7 +34,7 @@ The only runtime dependency is [`@noble/ed25519`](https://github.com/paulmillr/n
 ## Quick start
 
 ```typescript
-import { AgentPaySession, fetchCatalog } from "@agentpay/sdk";
+import { ConduitSession, fetchCatalog } from "@conduit/sdk";
 
 const GATEWAY = "http://localhost:4020";
 
@@ -47,7 +47,7 @@ for (const s of catalog.services) {
 // 2. Open a session.
 //    Prerequisite: you have already deposited USDC on-chain by calling the
 //    escrow program's `open_channel` with this same `channelId`.
-const session = await AgentPaySession.open({
+const session = await ConduitSession.open({
   gatewayUrl: GATEWAY,
   sessionPda: "<base58 channel PDA>",     // session lookup key
   channelId: channelIdBytes,              // raw 32-byte Uint8Array OR base58 string
@@ -73,11 +73,11 @@ console.log(result.settlement);  // { isSuccess, transactionSignature, reason? }
 
 ## API reference
 
-### `AgentPaySession`
+### `ConduitSession`
 
 The main client. Manages one state-channel session.
 
-#### `AgentPaySession.open(params): Promise<AgentPaySession>`
+#### `ConduitSession.open(params): Promise<ConduitSession>`
 
 Registers a session with the gateway. Call this **after** your on-chain `open_channel` deposit has confirmed.
 

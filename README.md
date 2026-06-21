@@ -1,8 +1,8 @@
-# AgentPay
+# Conduit
 
 **Stablecoin payment rails for autonomous AI agents — pay-per-call API access over Solana state channels.**
 
-AgentPay lets an AI agent consume paid Web3 / DePIN APIs and settle in USDC **per request**, without a credit card, a subscription, or an on-chain transaction on every call. The agent deposits USDC once, streams thousands of cryptographically-signed micro-payments ("IOUs") off-chain at HTTP speed, and the gateway settles the final balance on-chain in a single transaction.
+Conduit lets an AI agent consume paid Web3 / DePIN APIs and settle in USDC **per request**, without a credit card, a subscription, or an on-chain transaction on every call. The agent deposits USDC once, streams thousands of cryptographically-signed micro-payments ("IOUs") off-chain at HTTP speed, and the gateway settles the final balance on-chain in a single transaction.
 
 > Think **x402 / Lightning for AI agents**, built on Solana with USDC.
 
@@ -18,7 +18,7 @@ The agent economy needs a way for software to pay software. Today an autonomous 
 | On-chain transaction per call | ~400ms latency and a fee on *every* request — unusable for high-frequency agents |
 | Prepaid credits on a centralized platform | Custodial, walled-garden, no settlement guarantees |
 
-AgentPay solves this with **state channels**: one on-chain deposit, unlimited off-chain signed payments, one on-chain settlement. The agent pays exactly for what it uses, the provider is guaranteed payment by a signature it can redeem on-chain, and neither side has to trust the other.
+Conduit solves this with **state channels**: one on-chain deposit, unlimited off-chain signed payments, one on-chain settlement. The agent pays exactly for what it uses, the provider is guaranteed payment by a signature it can redeem on-chain, and neither side has to trust the other.
 
 ---
 
@@ -63,10 +63,10 @@ This is a pnpm monorepo.
 
 | Package | Description |
 |---|---|
-| [`packages/sdk`](packages/sdk) | **`@agentpay/sdk`** — TypeScript SDK agents use to open sessions, sign IOUs, and call APIs. [Usage guide →](packages/sdk/README.md) |
-| [`packages/gateway`](packages/gateway) | **`@agentpay/gateway`** — Express server: service catalog, session manager, IOU verification, upstream proxy, on-chain settlement. |
+| [`packages/sdk`](packages/sdk) | **`@conduit/sdk`** — TypeScript SDK agents use to open sessions, sign IOUs, and call APIs. [Usage guide →](packages/sdk/README.md) |
+| [`packages/gateway`](packages/gateway) | **`@conduit/gateway`** — Express server: service catalog, session manager, IOU verification, upstream proxy, on-chain settlement. |
 | [`packages/web`](packages/web) | Next.js frontend — landing page, provider catalog, provider dashboard, live demo. |
-| [`programs/agentpay-contracts`](programs/agentpay-contracts) | Anchor workspace: `escrow` (state channel) + `registry` (provider catalog). [Contract spec →](programs/agentpay-contracts/README.md) |
+| [`programs/conduit-contracts`](programs/conduit-contracts) | Anchor workspace: `escrow` (state channel) + `registry` (provider catalog). [Contract spec →](programs/conduit-contracts/README.md) |
 | [`agents`](agents) | Example agent (`weather-agent.ts`) demonstrating the full flow end-to-end. |
 
 ### Deployed programs (Solana devnet)
@@ -105,7 +105,7 @@ cp .env.example .env
 
 ```bash
 pnpm dev:gateway
-# AgentPay Gateway running on http://0.0.0.0:4020
+# Conduit Gateway running on http://0.0.0.0:4020
 ```
 
 Verify it's up:
@@ -150,13 +150,13 @@ Session-gated routes require three headers, all produced automatically by the SD
 ## Using the SDK
 
 ```typescript
-import { AgentPaySession, fetchCatalog } from "@agentpay/sdk";
+import { ConduitSession, fetchCatalog } from "@conduit/sdk";
 
 // 1. Discover services
 const catalog = await fetchCatalog("http://localhost:4020");
 
 // 2. Open a session (after depositing USDC on-chain via open_channel)
-const session = await AgentPaySession.open({
+const session = await ConduitSession.open({
   gatewayUrl: "http://localhost:4020",
   sessionPda: "<base58 channel PDA>",
   channelId: "<base58 32-byte channel_id>",
@@ -187,7 +187,7 @@ pnpm test        # run unit tests
 pnpm dev:gateway # run the gateway in watch mode
 ```
 
-The Anchor programs are built and deployed from the Solana toolchain (see [`programs/agentpay-contracts/README.md`](programs/agentpay-contracts/README.md)), not via `pnpm`.
+The Anchor programs are built and deployed from the Solana toolchain (see [`programs/conduit-contracts/README.md`](programs/conduit-contracts/README.md)), not via `pnpm`.
 
 ---
 

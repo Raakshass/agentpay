@@ -1,7 +1,7 @@
 [package]
 name = "escrow"
 version = "0.1.0"
-description = "AgentPay state-channel escrow program"
+description = "Conduit state-channel escrow program"
 edition = "2021"
 
 [lib]

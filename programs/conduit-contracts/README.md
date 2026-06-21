@@ -1,6 +1,6 @@
-# AgentPay Contracts
+# Conduit Contracts
 
-On-chain layer for **AgentPay** — an x402-style agent payment protocol on Solana.
+On-chain layer for **Conduit** — an x402-style agent payment protocol on Solana.
 AI agents pay for API calls in USDC through a **state-channel escrow**, and
 providers advertise themselves in a permissionless **registry**.
 
@@ -19,7 +19,7 @@ amounts are atomic units (`1 USDC = 1_000_000`).
 ## Layout
 
 ```
-agentpay-contracts/
+conduit-contracts/
 ├── programs/escrow/        # state channel
 ├── programs/registry/      # provider catalog
 ├── tests/escrow.ts         # full escrow lifecycle + attack cases

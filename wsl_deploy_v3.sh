@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "=== AgentPay WSL Deploy v3 (rebuild + deploy) ==="
+echo "=== Conduit WSL Deploy v3 (rebuild + deploy) ==="
 
 export PATH="$HOME/.cargo/bin:$HOME/.local/share/solana/install/active_release/bin:$HOME/.avm/bin:$PATH"
 source "$HOME/.cargo/env" 2>/dev/null || true
 
-cd /mnt/d/blockchain_funding/agentpay/programs/agentpay-contracts
+cd /mnt/d/blockchain_funding/agentpay/programs/conduit-contracts
 
 echo "rust:    $(rustc --version)"
 echo "solana:  $(solana --version)"

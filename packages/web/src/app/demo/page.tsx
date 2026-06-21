@@ -4,7 +4,7 @@ import { DemoClient } from "@/components/demo/demo-client";
 import { PillLabel } from "@/components/ui/pill-label";
 
 export const metadata: Metadata = {
-  title: "Live Demo — AgentPay",
+  title: "Live Demo — Conduit",
   description:
     "Watch one full state-channel payment end to end, then see it run at scale across many agents.",
 };
@@ -16,7 +16,7 @@ export default function DemoPage() {
 
       {/* Part 2 — the same lifecycle, running across the whole network. */}
       <section
-        aria-label="AgentPay at scale"
+        aria-label="Conduit at scale"
         className="mt-24 md:mt-32 border-t border-border pt-16"
       >
         <PillLabel icon="✦" label="AT SCALE" />

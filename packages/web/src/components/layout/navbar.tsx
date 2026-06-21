@@ -35,7 +35,7 @@ export function Navbar() {
             <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center">
               <span className="text-black text-xs font-bold">AP</span>
             </div>
-            AgentPay
+            Conduit
           </Link>
 
           {/* Desktop nav links */}

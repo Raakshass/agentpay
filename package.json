@@ -1,5 +1,5 @@
 {
-  "name": "agentpay",
+  "name": "conduit",
   "version": "0.1.0",
   "private": true,
   "description": "State channel payment gateway for AI agents to consume DePIN and Web3 API data on Solana.",
@@ -10,7 +10,7 @@
     "pnpm": ">=9.0.0"
   },
   "scripts": {
-    "dev:gateway": "pnpm --filter @agentpay/gateway run dev",
+    "dev:gateway": "pnpm --filter @conduit/gateway run dev",
     "build": "pnpm --filter './packages/**' run build",
     "test": "pnpm --filter './packages/**' run test",
     "typecheck": "pnpm --filter './packages/**' run typecheck",

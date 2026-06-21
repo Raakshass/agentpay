@@ -1,6 +1,6 @@
-# @agentpay/web
+# @conduit/web
 
-The AgentPay marketing site + dApp — a dark, monochromatic frontend for the
+The Conduit marketing site + dApp — a dark, monochromatic frontend for the
 permissionless agent payment protocol on Solana. Built with Next.js 16 (App
 Router), Tailwind v4, Framer Motion, and the Solana wallet adapter.
 
@@ -21,7 +21,7 @@ pnpm workspace):
 ```bash
 pnpm install
 cp packages/web/.env.example packages/web/.env.local   # then edit if needed
-pnpm --filter @agentpay/web dev
+pnpm --filter @conduit/web dev
 ```
 
 Open http://localhost:3000.
@@ -54,10 +54,10 @@ instructions by hand. Writes are signed through the connected wallet.
 ## Scripts
 
 ```bash
-pnpm --filter @agentpay/web dev      # dev server (Turbopack)
-pnpm --filter @agentpay/web build    # production build
-pnpm --filter @agentpay/web start    # serve the production build
-pnpm --filter @agentpay/web lint     # ESLint
+pnpm --filter @conduit/web dev      # dev server (Turbopack)
+pnpm --filter @conduit/web build    # production build
+pnpm --filter @conduit/web start    # serve the production build
+pnpm --filter @conduit/web lint     # ESLint
 ```
 
 ## Deploy (Vercel)

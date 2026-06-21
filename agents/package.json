@@ -1,14 +1,14 @@
 {
-  "name": "@agentpay/demo-agent",
+  "name": "@conduit/demo-agent",
   "version": "0.1.0",
   "private": true,
-  "description": "Demo AI agent that consumes DePIN weather data via AgentPay state channels.",
+  "description": "Demo AI agent that consumes DePIN weather data via Conduit state channels.",
   "type": "module",
   "scripts": {
     "demo": "tsx src/weather-agent.ts"
   },
   "dependencies": {
-    "@agentpay/sdk": "workspace:*"
+    "@conduit/sdk": "workspace:*"
   },
   "devDependencies": {
     "tsx": "^4.16.0",

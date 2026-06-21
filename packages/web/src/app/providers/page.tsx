@@ -3,7 +3,7 @@ import { PillLabel } from "@/components/ui/pill-label";
 import { DashboardClient } from "@/components/providers/dashboard-client";
 
 export const metadata: Metadata = {
-  title: "Provider Dashboard — AgentPay",
+  title: "Provider Dashboard — Conduit",
   description:
     "Register your API or DePIN service on-chain, set its price, and manage your listings.",
 };

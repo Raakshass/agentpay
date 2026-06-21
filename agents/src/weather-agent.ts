@@ -1,7 +1,7 @@
 /**
  * Demo Weather Agent
  *
- * Demonstrates the full AgentPay state channel flow:
+ * Demonstrates the full Conduit state channel flow:
  * 1. Discover available services via catalog
  * 2. Open a session (after on-chain deposit)
  * 3. Make multiple API calls with automatic IOU signing
@@ -11,7 +11,7 @@
  * Replace with real escrow deposit when Vineet's contract is ready.
  */
 
-import { AgentPaySession, fetchCatalog } from "@agentpay/sdk";
+import { ConduitSession, fetchCatalog } from "@conduit/sdk";
 
 const GATEWAY_URL = "http://localhost:4020";
 
@@ -24,7 +24,7 @@ const MOCK_CHANNEL_ID = "SimulatedChannelId1111111111111111111111111";
 const MOCK_DEPOSIT_ATOMIC = 10_000_000; // 10 USDC
 
 async function runWeatherAgent(): Promise<void> {
-  console.log("=== AgentPay Demo Weather Agent ===\n");
+  console.log("=== Conduit Demo Weather Agent ===\n");
 
   // Step 1: Discover available services
   console.log("Fetching service catalog...");
@@ -36,7 +36,7 @@ async function runWeatherAgent(): Promise<void> {
 
   // Step 2: Open a session
   console.log("\nOpening session...");
-  const session = await AgentPaySession.open({
+  const session = await ConduitSession.open({
     gatewayUrl: GATEWAY_URL,
     sessionPda: MOCK_SESSION_PDA,
     channelId: MOCK_CHANNEL_ID,

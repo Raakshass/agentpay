@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "=== AgentPay WSL Deploy v2 ==="
+echo "=== Conduit WSL Deploy v2 ==="
 
 # Source paths
 export PATH="$HOME/.cargo/bin:$HOME/.local/share/solana/install/active_release/bin:$HOME/.avm/bin:$PATH"
@@ -14,7 +14,7 @@ echo "anchor:  $(anchor --version)"
 # --- Step 1: Sync program keys ---
 echo ""
 echo "=== step 1: sync anchor keys ==="
-cd /mnt/d/blockchain_funding/agentpay/programs/agentpay-contracts
+cd /mnt/d/blockchain_funding/agentpay/programs/conduit-contracts
 
 # Get the actual keypair-derived IDs
 ESCROW_ID=$(solana address -k target/deploy/escrow-keypair.json 2>/dev/null || echo "MISSING")

@@ -1,5 +1,5 @@
 /**
- * Shared test helpers for the AgentPay contract suites.
+ * Shared test helpers for the Conduit contract suites.
  *
  * Provides a local test USDC mint (6 decimals), wallet funding, and ATA
  * helpers so the escrow/registry specs can focus on behavior.

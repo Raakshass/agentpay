@@ -38,7 +38,7 @@ export const ACTORS: ActorMeta[] = [
   { id: "agent", label: "AI Agent", sublabel: "Consumer", icon: Bot },
   {
     id: "gateway",
-    label: "AgentPay Gateway",
+    label: "Conduit Gateway",
     sublabel: "Off-chain relay",
     icon: Network,
   },

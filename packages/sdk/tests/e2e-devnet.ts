@@ -1,5 +1,5 @@
 /**
- * AgentPay End-to-End Devnet Test
+ * Conduit End-to-End Devnet Test
  *
  * Exercises the full state channel lifecycle against Solana Devnet:
  *
@@ -475,7 +475,7 @@ async function verifyBalances(
 
 async function main() {
   console.log("╔════════════════════════════════════════════════╗");
-  console.log("║   agentpay e2e devnet test                    ║");
+  console.log("║   conduit e2e devnet test                     ║");
   console.log("╠════════════════════════════════════════════════╣");
   console.log(`║  gateway:  ${GATEWAY_URL.padEnd(36)}║`);
   console.log(`║  rpc:      ${RPC_URL.slice(0, 36).padEnd(36)}║`);

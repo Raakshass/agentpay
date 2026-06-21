@@ -1,5 +1,5 @@
 {
-  "name": "@agentpay/gateway",
+  "name": "@conduit/gateway",
   "version": "0.1.0",
   "private": true,
   "description": "State channel payment gateway server — verifies off-chain IOUs from AI agents and proxies to upstream DePIN and Web3 APIs.",

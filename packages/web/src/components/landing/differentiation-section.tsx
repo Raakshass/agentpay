@@ -34,7 +34,7 @@ export function DifferentiationSection() {
     <section className="py-24 bg-bg-lifted" aria-label="Differentiation">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          pill={<PillLabel icon="◈" label="WHY AGENTPAY" />}
+          pill={<PillLabel icon="◈" label="WHY CONDUIT" />}
           before="Built for the"
           emphasis="agentic economy"
           subtitle="An open, permissionless payment layer purpose-built for autonomous agent-to-agent and agent-to-DePIN commerce."

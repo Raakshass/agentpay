@@ -12,7 +12,7 @@ export function registerHealthRoutes(application: Express): void {
   application.get("/health", (_request, response) => {
     response.json({
       status: "healthy",
-      service: "agentpay-gateway",
+      service: "conduit-gateway",
       activeSessions: getActiveSessionCount(),
       timestamp: new Date().toISOString(),
     });

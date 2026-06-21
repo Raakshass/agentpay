@@ -1,4 +1,4 @@
-//! AgentPay Escrow — state-channel payments for agent API consumption.
+//! Conduit Escrow — state-channel payments for agent API consumption.
 //!
 //! Lifecycle:
 //!   A) DEPOSIT  (`open_channel`): the agent locks USDC into a PDA-owned vault.

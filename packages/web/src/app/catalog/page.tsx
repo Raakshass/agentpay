@@ -3,7 +3,7 @@ import { PillLabel } from "@/components/ui/pill-label";
 import { CatalogClient } from "@/components/catalog/catalog-client";
 
 export const metadata: Metadata = {
-  title: "Catalog — AgentPay",
+  title: "Catalog — Conduit",
   description:
     "Browse every API, DePIN feed, and agent service registered on-chain. Pay per call in USDC.",
 };

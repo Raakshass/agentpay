@@ -2,12 +2,12 @@
 set -euo pipefail
 
 # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-# AgentPay â€” WSL Deployment Script
+# Conduit â€” WSL Deployment Script
 # Installs Solana + Anchor toolchain, builds, and deploys to devnet.
 # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 echo "â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—"
-echo "â•‘   AgentPay WSL Deploy Pipeline                 â•‘"
+echo "â•‘   Conduit WSL Deploy Pipeline                 â•‘"
 echo "â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•"
 
 # --- Source paths ---
@@ -91,7 +91,7 @@ echo "  final balance: $(solana balance)"
 # --- Step 6: Build contracts ---
 echo ""
 echo "â•â•â• step 6: building contracts â•â•â•"
-PROJECT_DIR="/mnt/d/blockchain_funding/agentpay/programs/agentpay-contracts"
+PROJECT_DIR="/mnt/d/blockchain_funding/agentpay/programs/conduit-contracts"
 cd "$PROJECT_DIR"
 
 echo "  running anchor build..."

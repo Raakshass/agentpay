@@ -49,7 +49,7 @@ async function handleTokenBalancesRequest(
 
   response.json({
     source: "helius-enhanced-api",
-    provider: "agentpay",
+    provider: "conduit",
     timestamp: new Date().toISOString(),
     walletAddress,
     data: upstreamResponse.data,

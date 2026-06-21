@@ -42,7 +42,7 @@ export function ProviderDrawer({ provider, onClose }: ProviderDrawerProps) {
 
   const snippet = provider
     ? `curl ${config.gatewayUrl}/call \\
-  -H "x-agentpay-provider: ${provider.address}" \\
+  -H "x-conduit-provider: ${provider.address}" \\
   -d '{ "input": "…" }'`
     : "";
 

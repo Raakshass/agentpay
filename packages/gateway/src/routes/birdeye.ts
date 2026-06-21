@@ -51,7 +51,7 @@ async function handleTokenPriceRequest(
 
   response.json({
     source: "birdeye-aggregated-dex",
-    provider: "agentpay",
+    provider: "conduit",
     timestamp: new Date().toISOString(),
     tokenAddress,
     data: upstreamResponse.data,

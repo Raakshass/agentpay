@@ -11,12 +11,12 @@ sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
 cargo install --git https://github.com/coral-xyz/anchor --tag v0.30.0 anchor-cli
 
 # Initialize Anchor workspace in this directory
-anchor init agentpay-contracts --no-git
+anchor init conduit-contracts --no-git
 ```
 
 ## Programs to Build
 
-### 1. Escrow Program (`agentpay-escrow`)
+### 1. Escrow Program (`conduit-escrow`)
 
 **Accounts:**
 ```rust
@@ -68,7 +68,7 @@ use brine_ed25519::sig_verify;
 sig_verify(&agent_pubkey, &agent_signature, &iou_bytes)?;
 ```
 
-### 2. Registry Program (`agentpay-registry`)
+### 2. Registry Program (`conduit-registry`)
 
 **Accounts:**
 ```rust

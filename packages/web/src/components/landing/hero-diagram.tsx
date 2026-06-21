@@ -27,7 +27,7 @@ export function HeroDiagram() {
     <div
       className="relative w-full max-w-lg mx-auto"
       role="img"
-      aria-label="Diagram showing an AI agent sending a USDC micropayment to an API through AgentPay"
+      aria-label="Diagram showing an AI agent sending a USDC micropayment to an API through Conduit"
     >
       <svg
         viewBox="0 0 500 200"

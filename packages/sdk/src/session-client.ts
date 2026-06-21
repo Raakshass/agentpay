@@ -8,7 +8,7 @@
  *
  * Usage:
  * ```typescript
- * const session = await AgentPaySession.open({
+ * const session = await ConduitSession.open({
  *   gatewayUrl: "http://localhost:4020",
  *   sessionPda: "<base58 PDA>",
  *   channelId: "<base58 channel_id>",
@@ -87,7 +87,7 @@ export interface OpenSessionParams {
   depositAmountAtomic: number;
 }
 
-export class AgentPaySession {
+export class ConduitSession {
   private readonly gatewayUrl: string;
   private readonly agentPrivateKey: Uint8Array;
   private state: SessionState;
@@ -108,7 +108,7 @@ export class AgentPaySession {
    * Prerequisites: The agent must have already deposited USDC on-chain
    * via the escrow contract's `open_channel` instruction.
    */
-  static async open(params: OpenSessionParams): Promise<AgentPaySession> {
+  static async open(params: OpenSessionParams): Promise<ConduitSession> {
     const channelIdBase58 =
       typeof params.channelId === "string"
         ? params.channelId
@@ -146,7 +146,7 @@ export class AgentPaySession {
       isActive: true,
     };
 
-    return new AgentPaySession(params.gatewayUrl, params.agentPrivateKey, state);
+    return new ConduitSession(params.gatewayUrl, params.agentPrivateKey, state);
   }
 
   /**

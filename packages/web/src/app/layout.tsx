@@ -5,11 +5,11 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 
 export const metadata: Metadata = {
-  title: "AgentPay — The Payment Layer for Autonomous Agents",
+  title: "Conduit — The Payment Layer for Autonomous Agents",
   description:
     "Permissionless state channel micropayments on Solana. AI agents pay for APIs, DePIN data, and other agents' services using USDC — no subscriptions, no credit cards.",
   keywords: [
-    "AgentPay",
+    "Conduit",
     "Solana",
     "AI agents",
     "micropayments",
