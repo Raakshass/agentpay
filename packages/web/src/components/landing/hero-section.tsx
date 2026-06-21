@@ -122,7 +122,7 @@ export function HeroSection() {
               Browse the Catalog
               <ArrowRight className="w-4 h-4" />
             </Button>
-            <Button href="https://docs.conduit.dev" variant="ghost" size="lg">
+            <Button href="/docs" variant="ghost" size="lg">
               <BookOpen className="w-4 h-4" />
               Read the Docs
             </Button>

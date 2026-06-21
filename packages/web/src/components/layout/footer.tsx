@@ -8,7 +8,7 @@ const footerLinks = {
     { label: "Live Demo", href: "/demo" },
   ],
   resources: [
-    { label: "Documentation", href: "https://docs.conduit.dev", external: true },
+    { label: "Documentation", href: "/docs" },
     { label: "SDK on npm", href: "https://www.npmjs.com/package/@conduit/sdk", external: true },
     { label: "GitHub", href: "https://github.com/agentpay", external: true },
   ],
@@ -16,7 +16,7 @@ const footerLinks = {
 
 const socialLinks = [
   { label: "GitHub", href: "https://github.com/agentpay", icon: Github },
-  { label: "Docs", href: "https://docs.conduit.dev", icon: BookOpen },
+  { label: "Docs", href: "/docs", icon: BookOpen },
   { label: "npm", href: "https://www.npmjs.com/package/@conduit/sdk", icon: Package },
 ];
 

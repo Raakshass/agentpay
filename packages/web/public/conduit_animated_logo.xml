@@ -1,0 +1,170 @@
+<svg width="800" height="400" viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Background Glows (For standard SVG embedding without external CSS) -->
+    <radialGradient id="bgGlowPurple" cx="25%" cy="50%" r="50%">
+      <stop offset="0%" stopColor="#4c1d95" stopOpacity="0.2" />
+      <stop offset="100%" stopColor="#4c1d95" stopOpacity="0" />
+    </radialGradient>
+    <radialGradient id="bgGlowCyan" cx="75%" cy="50%" r="50%">
+      <stop offset="0%" stopColor="#164e63" stopOpacity="0.2" />
+      <stop offset="100%" stopColor="#164e63" stopOpacity="0" />
+    </radialGradient>
+
+    <!-- Stream Colors & Filters -->
+    <linearGradient id="streamGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stopColor="#9333EA" />
+      <stop offset="50%" stopColor="#818CF8" />
+      <stop offset="100%" stopColor="#06B6D4" />
+    </linearGradient>
+    <filter id="bridgeGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <!-- MASK: Fades the stream edges so they emerge from INSIDE the deep voids -->
+    <linearGradient id="voidMaskFade" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="20.5%" stopColor="black" />
+      <stop offset="25%" stopColor="white" />
+      <stop offset="75%" stopColor="white" />
+      <stop offset="79.5%" stopColor="black" />
+    </linearGradient>
+    <mask id="voidMask">
+      <rect x="0" y="0" width="800" height="400" fill="url(#voidMaskFade)" />
+    </mask>
+
+    <!-- Left Portal Assets -->
+    <filter id="neonGlowLeft" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="blur1" />
+      <feGaussianBlur stdDeviation="16" result="blur2" />
+      <feMerge><feMergeNode in="blur2" /><feMergeNode in="blur1" /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>
+    <filter id="deepShadowLeft"><feDropShadow dx="0" dy="15" stdDeviation="15" floodColor="#000000" floodOpacity="0.8"/></filter>
+    <radialGradient id="voidGlowLeft" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stopColor="#C084FC" stopOpacity="0.9" />
+      <stop offset="40%" stopColor="#7E22CE" stopOpacity="0.5" />
+      <stop offset="100%" stopColor="#02040A" stopOpacity="0" />
+    </radialGradient>
+    <pattern id="minecraftPortalLeft" width="32" height="32" patternUnits="userSpaceOnUse">
+      <rect width="32" height="32" fill="#2E1065" />
+      <g opacity="0.6">
+        <path d="M8,0 v8 h-8 m32,0 h-8 v8 h8 m-8,8 v8 h-8 m-16,-8 h8 v-8" fill="none" stroke="#7E22CE" strokeWidth="4"/>
+        <rect x="12" y="12" width="8" height="8" fill="#A855F7" />
+        <rect x="4" y="20" width="4" height="4" fill="#C084FC" opacity="0.8"/>
+        <rect x="24" y="8" width="4" height="4" fill="#D8B4FE" opacity="0.6"/>
+      </g>
+      <animateTransform attributeName="patternTransform" type="translate" from="0 32" to="0 0" dur="4s" repeatCount="indefinite" />
+    </pattern>
+
+    <!-- Right Portal Assets -->
+    <filter id="neonGlowRight" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="blur1" />
+      <feGaussianBlur stdDeviation="16" result="blur2" />
+      <feMerge><feMergeNode in="blur2" /><feMergeNode in="blur1" /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>
+    <filter id="deepShadowRight"><feDropShadow dx="0" dy="15" stdDeviation="15" floodColor="#000000" floodOpacity="0.8"/></filter>
+    <radialGradient id="voidGlowRight" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stopColor="#22D3EE" stopOpacity="0.9" />
+      <stop offset="40%" stopColor="#0891B2" stopOpacity="0.5" />
+      <stop offset="100%" stopColor="#02040A" stopOpacity="0" />
+    </radialGradient>
+    <pattern id="minecraftPortalRight" width="32" height="32" patternUnits="userSpaceOnUse">
+      <rect width="32" height="32" fill="#083344" />
+      <g opacity="0.6">
+        <path d="M8,0 v8 h-8 m32,0 h-8 v8 h8 m-8,8 v8 h-8 m-16,-8 h8 v-8" fill="none" stroke="#0284C7" strokeWidth="4"/>
+        <rect x="12" y="12" width="8" height="8" fill="#06B6D4" />
+        <rect x="4" y="20" width="4" height="4" fill="#67E8F9" opacity="0.8"/>
+        <rect x="24" y="8" width="4" height="4" fill="#A5F3FC" opacity="0.6"/>
+      </g>
+      <animateTransform attributeName="patternTransform" type="translate" from="0 32" to="0 0" dur="4s" repeatCount="indefinite" />
+    </pattern>
+
+    <!-- Standalone CSS Animations -->
+    <style>
+      <![CDATA[
+        /* Background base */
+        .svg-bg { fill: #060913; }
+        
+        /* Irregular burst lengths for pseudo-random data packets */
+        @keyframes flowBurst1 { from { stroke-dashoffset: 710; } to { stroke-dashoffset: 0; } }
+        @keyframes flowBurst2 { from { stroke-dashoffset: 535; } to { stroke-dashoffset: 0; } }
+        @keyframes flowBurstRev { from { stroke-dashoffset: 0; } to { stroke-dashoffset: 695; } }
+        
+        @keyframes pulseGlow { 0% { opacity: 0.6; stroke-width: 2px; } 100% { opacity: 1; stroke-width: 3px; } }
+        @keyframes voidThrob { 0% { opacity: 0.4; } 100% { opacity: 0.85; } }
+        
+        /* Out-of-phase animation timings */
+        .stream-burst-1 { animation: flowBurst1 4s linear infinite; }
+        .stream-burst-2 { animation: flowBurst2 3.1s linear infinite; }
+        .stream-burst-rev { animation: flowBurstRev 4.7s linear infinite; }
+        
+        .portal-pulse-left { animation: pulseGlow 3s ease-in-out infinite alternate; stroke: #9333EA; }
+        .portal-pulse-right { animation: pulseGlow 3.5s ease-in-out infinite alternate; stroke: #06B6D4; }
+        .void-core { animation: voidThrob 3s ease-in-out infinite alternate; mix-blend-mode: screen; }
+
+        /* Emulated 3D perspective transforms */
+        .left-portal { transform-origin: 200px 200px; transform: scale(1.0) skewY(15deg) scaleX(0.8); }
+        .right-portal { transform-origin: 600px 200px; transform: scale(1.0) skewY(-15deg) scaleX(0.8); }
+        
+        /* Text styling */
+        .brand-text {
+          font-family: system-ui, -apple-system, sans-serif;
+          font-size: 32px;
+          font-weight: bold;
+          letter-spacing: 0.35em;
+          fill: url(#streamGradient);
+        }
+      ]]>
+    </style>
+  </defs>
+
+  <!-- Background Layer -->
+  <rect width="800" height="400" className="svg-bg" />
+  <rect width="800" height="400" fill="url(#bgGlowPurple)" />
+  <rect width="800" height="400" fill="url(#bgGlowCyan)" />
+
+  <!-- The Data Stream (Masked to emerge from voids) -->
+  <g mask="url(#voidMask)">
+    <!-- Faint core connection -->
+    <path d="M 170 200 L 630 200" fill="none" stroke="url(#streamGradient)" strokeWidth="2" opacity="0.1" filter="url(#bridgeGlow)" />
+    <!-- Packet Burst 1 -->
+    <path d="M 170 200 Q 400 240 630 200" fill="none" stroke="url(#streamGradient)" strokeWidth="3.5" strokeDasharray="15 200 5 150 40 300" strokeLinecap="round" className="stream-burst-1" filter="url(#bridgeGlow)" />
+    <!-- Packet Burst 2 -->
+    <path d="M 170 200 Q 400 210 630 200" fill="none" stroke="url(#streamGradient)" strokeWidth="2" strokeDasharray="5 100 20 250 10 150" strokeLinecap="round" opacity="0.8" className="stream-burst-2" filter="url(#bridgeGlow)" />
+    <!-- Packet Return -->
+    <path d="M 170 200 Q 400 160 630 200" fill="none" stroke="url(#streamGradient)" strokeWidth="2.5" strokeDasharray="25 150 5 300 15 200" strokeLinecap="round" opacity="0.7" className="stream-burst-rev" filter="url(#bridgeGlow)" />
+  </g>
+
+  <!-- LEFT PORTAL (AI Agent Node) -->
+  <g className="left-portal">
+    <g filter="url(#deepShadowLeft)" transform="translate(130, 70)">
+      <path d="M20 20 L40 40 L40 220 L20 240 Z" fill="#171236" stroke="#3B1C73" strokeWidth="1"/>
+      <path d="M120 20 L100 40 L100 220 L120 240 Z" fill="#171236" stroke="#3B1C73" strokeWidth="1"/>
+      <path d="M20 20 L120 20 L100 40 L40 40 Z" fill="#241452" stroke="#3B1C73" strokeWidth="1"/>
+      <path d="M20 240 L120 240 L100 220 L40 220 Z" fill="#0A0F1E" stroke="#3B1C73" strokeWidth="1"/>
+      
+      <rect x="40" y="40" width="60" height="180" fill="#02040A" />
+      <rect x="40" y="40" width="60" height="180" fill="url(#minecraftPortalLeft)" />
+      <rect x="40" y="40" width="60" height="180" fill="url(#voidGlowLeft)" className="void-core" />
+      <rect x="40" y="40" width="60" height="180" fill="none" className="portal-pulse-left" filter="url(#neonGlowLeft)" />
+    </g>
+  </g>
+
+  <!-- RIGHT PORTAL (DePIN Provider Node) -->
+  <g className="right-portal">
+    <g filter="url(#deepShadowRight)" transform="translate(530, 70)">
+      <path d="M20 20 L40 40 L40 220 L20 240 Z" fill="#08202A" stroke="#0C4A6E" strokeWidth="1"/>
+      <path d="M120 20 L100 40 L100 220 L120 240 Z" fill="#08202A" stroke="#0C4A6E" strokeWidth="1"/>
+      <path d="M20 20 L120 20 L100 40 L40 40 Z" fill="#10364A" stroke="#0C4A6E" strokeWidth="1"/>
+      <path d="M20 240 L120 240 L100 220 L40 220 Z" fill="#030E14" stroke="#0C4A6E" strokeWidth="1"/>
+      
+      <rect x="40" y="40" width="60" height="180" fill="#02040A" />
+      <rect x="40" y="40" width="60" height="180" fill="url(#minecraftPortalRight)" />
+      <rect x="40" y="40" width="60" height="180" fill="url(#voidGlowRight)" className="void-core" />
+      <rect x="40" y="40" width="60" height="180" fill="none" className="portal-pulse-right" filter="url(#neonGlowRight)" />
+    </g>
+  </g>
+
+  <!-- Brand Typography -->
+  <text x="400" y="380" className="brand-text" textAnchor="middle" filter="drop-shadow(0px 4px 8px rgba(0,0,0,0.8))">CONDUIT</text>
+  <line x1="360" y1="392" x2="440" y2="392" stroke="url(#streamGradient)" strokeWidth="1" opacity="0.5" />
+</svg>

@@ -23,6 +23,14 @@ export const config = {
   gatewayUrl:
     process.env.NEXT_PUBLIC_GATEWAY_URL || "http://localhost:4020",
   gatewayWsUrl: process.env.NEXT_PUBLIC_GATEWAY_WS_URL || "",
+  /**
+   * Public key of the gateway server's wallet. Providers MUST register this as
+   * their gateway_authority so the gateway can call `increment_call_count` on
+   * the registry. Without this, usage metering will fail with Unauthorized.
+   *
+   * Generate with: `solana-keygen pubkey gateway-keypair.json`
+   */
+  gatewayAuthority: process.env.NEXT_PUBLIC_GATEWAY_AUTHORITY || "",
 } as const;
 
 /**

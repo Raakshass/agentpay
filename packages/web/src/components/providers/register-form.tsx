@@ -2,18 +2,35 @@
 
 import { useState, type FormEvent } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { PublicKey } from "@solana/web3.js";
 import { Button } from "@/components/ui/button";
 import { TxStatus } from "@/components/ui/tx-status";
 import { useSendIx } from "@/hooks/use-send-ix";
 import { buildRegisterProviderIx } from "@/lib/registry-client";
 import { AGENT_TYPES, CATEGORIES } from "@/lib/registry-enums";
 import { MAX_NAME_LEN } from "@/lib/constants";
+import { config } from "@/lib/config";
 
 /** SHA-256 a string into the 32-byte endpoint hash the program expects. */
 async function endpointHash32(endpoint: string): Promise<Uint8Array> {
   const data = new TextEncoder().encode(endpoint.trim());
   const digest = await crypto.subtle.digest("SHA-256", data);
   return new Uint8Array(digest);
+}
+
+/**
+ * Resolve the gateway authority pubkey. Must be the gateway *server's* wallet
+ * so that the gateway can call `increment_call_count` on the registry.
+ * Falls back to null if the env var isn't set so the form can show a warning.
+ */
+function getGatewayAuthorityPubkey(): PublicKey | null {
+  const raw = config.gatewayAuthority;
+  if (!raw) return null;
+  try {
+    return new PublicKey(raw);
+  } catch {
+    return null;
+  }
 }
 
 const inputClasses =
@@ -34,6 +51,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
   const [agentType, setAgentType] = useState(0);
   const [validationError, setValidationError] = useState<string | null>(null);
 
+  const gatewayAuthorityPubkey = getGatewayAuthorityPubkey();
   const submitting = state === "pending";
 
   async function handleSubmit(e: FormEvent) {
@@ -43,6 +61,12 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
 
     if (!publicKey) {
       setValidationError("Connect a wallet first.");
+      return;
+    }
+    if (!gatewayAuthorityPubkey) {
+      setValidationError(
+        "Gateway authority is not configured. Set NEXT_PUBLIC_GATEWAY_AUTHORITY in your environment.",
+      );
       return;
     }
     const trimmedName = name.trim();
@@ -67,10 +91,8 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
       priceUsdc,
       category,
       agentType,
-      // Default the payout + metering authority to the owner; both can be
-      // changed later by re-registering with explicit keys.
       providerWallet: publicKey,
-      gatewayAuthority: publicKey,
+      gatewayAuthority: gatewayAuthorityPubkey,
     });
 
     const sig = await send([ix]);
@@ -97,6 +119,16 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           List a service on-chain. You sign as the owner and can update or remove
           it anytime.
         </p>
+        {!gatewayAuthorityPubkey && (
+          <div className="mt-3 flex items-start gap-2.5 rounded-lg border border-warning/30 bg-warning/5 px-4 py-3 text-sm text-warning">
+            <span className="shrink-0">⚠</span>
+            <span>
+              <code className="font-mono text-xs">NEXT_PUBLIC_GATEWAY_AUTHORITY</code>{" "}
+              is not set. Without it, the gateway server won&apos;t be able to
+              meter API usage for your provider.
+            </span>
+          </div>
+        )}
       </div>
 
       <div className="space-y-1.5">
