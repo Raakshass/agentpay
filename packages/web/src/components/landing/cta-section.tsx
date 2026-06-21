@@ -9,7 +9,7 @@ export function CtaSection() {
   const prefersReducedMotion = useReducedMotion();
 
   return (
-    <section className="py-32 bg-bg relative overflow-hidden" aria-label="Call to action">
+    <section className="py-20 sm:py-32 bg-bg relative overflow-hidden" aria-label="Call to action">
       {/* Background glow */}
       <div
         className="absolute inset-0 pointer-events-none"

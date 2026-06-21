@@ -25,7 +25,7 @@ export function CatalogFilters({
 }: CatalogFiltersProps) {
   return (
     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-      <div className="relative flex-1 max-w-md">
+      <div className="relative flex-1 min-w-0">
         <Search className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-dim" />
         <input
           type="text"
@@ -37,7 +37,7 @@ export function CatalogFilters({
         />
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         <select
           value={value.category}
           onChange={(e) =>
@@ -78,7 +78,7 @@ export function CatalogFilters({
           ))}
         </select>
 
-        <span className="hidden sm:inline text-sm text-text-dim whitespace-nowrap">
+        <span className="text-sm text-text-dim whitespace-nowrap">
           {resultCount} {resultCount === 1 ? "result" : "results"}
         </span>
       </div>

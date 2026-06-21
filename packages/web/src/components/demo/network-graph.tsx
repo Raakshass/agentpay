@@ -30,7 +30,7 @@ export function NetworkGraph({ latest }: NetworkGraphProps) {
   const [hitProvider, setHitProvider] = useState<number | null>(null);
 
   return (
-    <div className="rounded-xl border border-border bg-bg-card p-4">
+    <div className="rounded-xl border border-border bg-bg-card p-2 sm:p-4">
       <svg
         viewBox={`0 0 ${W} ${H}`}
         className="w-full h-auto"

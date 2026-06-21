@@ -59,7 +59,7 @@ export function HeroSection() {
 
   return (
     <section
-      className="relative min-h-[90vh] flex items-center justify-center overflow-hidden"
+      className="relative min-h-[70vh] sm:min-h-[80vh] md:min-h-[90vh] flex items-center justify-center overflow-hidden"
       aria-label="Hero"
     >
       {/* Background radial glow */}

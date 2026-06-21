@@ -116,3 +116,18 @@ body {
   background-color: var(--color-bg-card) !important;
   border: 1px solid var(--color-border) !important;
 }
+
+/* --- Prevent horizontal overflow on mobile --- */
+html, body {
+  overflow-x: hidden;
+}
+
+/* --- Responsive wallet button for very small screens --- */
+@media (max-width: 380px) {
+  .wallet-adapter-button {
+    font-size: 12px !important;
+    height: 36px !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+}

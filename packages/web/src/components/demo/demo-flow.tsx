@@ -133,7 +133,7 @@ function FlowLane({
   playKey: string;
 }) {
   return (
-    <div className="relative mt-4 h-28">
+    <div className="relative mt-4 h-28 hidden sm:block">
       {/* Connector baseline (agent center → provider center) */}
       <div
         className="absolute top-1/2"
@@ -296,13 +296,13 @@ export function DemoFlow() {
       </p>
 
       {/* Track tabs */}
-      <div className="mt-8 inline-flex rounded-full border border-border bg-bg-card p-1">
+      <div className="mt-8 inline-flex flex-wrap rounded-full border border-border bg-bg-card p-1">
         {TRACKS.map((t) => (
           <button
             key={t.id}
             onClick={() => selectTrack(t.id)}
             className={[
-              "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
+              "rounded-full px-4 py-1.5 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap",
               t.id === trackId
                 ? "bg-white/10 text-text-primary"
                 : "text-text-muted hover:text-text-primary",
@@ -319,7 +319,7 @@ export function DemoFlow() {
         ) : (
           <>
             {/* Actor row */}
-            <div className="grid grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
               {ACTORS.map((a) => (
                 <ActorCard
                   key={a.id}
@@ -330,10 +330,10 @@ export function DemoFlow() {
               ))}
             </div>
 
-            {/* Animation lane */}
+            {/* Animation lane — hidden on very small screens where tokens overlap */}
             <FlowLane step={step} playKey={playKey} />
 
-            <div className="mt-2">
+            <div className="mt-2 hidden sm:block">
               <Legend />
             </div>
 
@@ -381,7 +381,7 @@ export function DemoFlow() {
             </div>
 
             {/* Progress + controls */}
-            <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex flex-1 gap-1.5">
                 {track.steps.map((s, i) => (
                   <div

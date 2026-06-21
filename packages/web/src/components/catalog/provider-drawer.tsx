@@ -71,7 +71,7 @@ export function ProviderDrawer({ provider, onClose }: ProviderDrawerProps) {
             exit={prefersReducedMotion ? { opacity: 0 } : { x: "100%" }}
             transition={{ duration: 0.35, ease: EASE_OUT }}
           >
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <h2 className="text-2xl font-semibold tracking-tight">

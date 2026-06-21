@@ -31,7 +31,7 @@ export function DifferentiationSection() {
   const prefersReducedMotion = useReducedMotion();
 
   return (
-    <section className="py-24 bg-bg-lifted" aria-label="Differentiation">
+    <section className="py-16 sm:py-24 bg-bg-lifted" aria-label="Differentiation">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           pill={<PillLabel icon="◈" label="WHY CONDUIT" />}

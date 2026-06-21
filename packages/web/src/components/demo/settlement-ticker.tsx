@@ -39,7 +39,7 @@ export function SettlementTicker({ events }: SettlementTickerProps) {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3, ease: EASE_OUT }}
-                className="flex items-center justify-between gap-3 py-2 border-b border-border/60 last:border-0"
+                className="flex items-center justify-between gap-2 py-2 border-b border-border/60 last:border-0"
               >
                 <span className="flex items-center gap-2 text-sm text-text-muted min-w-0">
                   <span className="truncate">{DEMO_AGENTS[e.agent]}</span>

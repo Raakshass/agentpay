@@ -32,7 +32,7 @@ export function ProblemSection() {
   const prefersReducedMotion = useReducedMotion();
 
   return (
-    <section className="py-24 bg-bg-lifted" aria-label="Problem">
+    <section className="py-16 sm:py-24 bg-bg-lifted" aria-label="Problem">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           pill={<PillLabel icon="◆" label="THE PROBLEM" />}

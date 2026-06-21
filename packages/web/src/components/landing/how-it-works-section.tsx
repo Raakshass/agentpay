@@ -56,7 +56,7 @@ export function HowItWorksSection() {
   if (!currentStep) return null;
 
   return (
-    <section className="py-24 bg-bg" aria-label="How it works">
+    <section className="py-16 sm:py-24 bg-bg" aria-label="How it works">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           pill={<PillLabel icon="▣" label="HOW IT WORKS" />}
@@ -67,13 +67,13 @@ export function HowItWorksSection() {
 
         <div className="mt-16 max-w-3xl mx-auto">
           {/* Step tabs */}
-          <div className="flex rounded-xl bg-bg-card border border-border overflow-hidden">
+          <div className="flex rounded-xl bg-bg-card border border-border overflow-x-auto">
             {steps.map((step, i) => (
               <button
                 key={i}
                 onClick={() => setActiveStep(i)}
                 className={[
-                  "flex-1 py-3 px-4 text-xs font-medium tracking-wider uppercase text-center transition-all duration-300",
+                  "flex-none sm:flex-1 py-3 px-4 text-xs font-medium tracking-wider uppercase text-center transition-all duration-300 whitespace-nowrap",
                   i === activeStep
                     ? "bg-white/5 text-text-primary border-b-2 border-accent"
                     : "text-text-dim hover:text-text-muted",
@@ -116,7 +116,7 @@ export function HowItWorksSection() {
                 }
                 transition={{ duration: 0.3, ease: EASE_OUT }}
               >
-                <span className="block text-5xl font-bold text-white/10 font-mono mb-4">
+                <span className="block text-3xl sm:text-5xl font-bold text-white/10 font-mono mb-4">
                   {currentStep.number}
                 </span>
                 <h3 className="text-2xl font-semibold text-text-primary mb-3">

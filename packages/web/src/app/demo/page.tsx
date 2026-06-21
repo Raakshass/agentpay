@@ -17,7 +17,7 @@ export default function DemoPage() {
       {/* Part 2 — the same lifecycle, running across the whole network. */}
       <section
         aria-label="Conduit at scale"
-        className="mt-24 md:mt-32 border-t border-border pt-16"
+        className="mt-16 sm:mt-24 md:mt-32 border-t border-border pt-12 sm:pt-16"
       >
         <PillLabel icon="✦" label="AT SCALE" />
         <h2 className="mt-6 text-3xl md:text-5xl font-semibold tracking-tight leading-[1.1]">
