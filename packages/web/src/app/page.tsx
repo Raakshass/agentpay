@@ -12,7 +12,7 @@ export default function LandingPage() {
       <ProblemSection />
       <HowItWorksSection />
       <DifferentiationSection />
-      <StatsSection />
+      {/* <StatsSection /> */}
       <CtaSection />
     </>
   );

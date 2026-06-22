@@ -1,7 +1,8 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { type ReactNode } from "react";
+import { useMotionAllowed } from "@/hooks/use-reduced-motion";
 import { cardHover, EASE_OUT, DURATION } from "@/lib/motion";
 
 interface CardProps {
@@ -21,7 +22,7 @@ export function Card({
   as = "div",
   ariaLabel,
 }: CardProps) {
-  const prefersReducedMotion = useReducedMotion();
+  const motionOk = useMotionAllowed();
   const Component = as === "button" ? motion.button : motion.div;
 
   return (
@@ -34,10 +35,11 @@ export function Card({
         className,
       ].join(" ")}
       whileHover={
-        hoverable && !prefersReducedMotion
+        hoverable && motionOk
           ? {
               ...cardHover,
-              borderColor: "rgba(255, 255, 255, 0.15)",
+              borderColor: "rgba(166, 107, 255, 0.25)",
+              boxShadow: "0 0 24px -6px rgba(166,107,255,0.15), 0 0 10px -4px rgba(95,224,255,0.1)",
             }
           : undefined
       }
@@ -46,9 +48,9 @@ export function Card({
       role={as === "button" ? "button" : undefined}
       aria-label={ariaLabel}
     >
-      {/* Faint radial glow at top of card */}
+      {/* Faint radial glow at top of card — intensifies on hover via CSS */}
       <div
-        className="pointer-events-none absolute inset-0"
+        className="pointer-events-none absolute inset-0 card-inner-glow"
         style={{
           background:
             "radial-gradient(ellipse 60% 40% at 50% 0%, rgba(95,224,255,0.05) 0%, transparent 70%)",

@@ -6,7 +6,7 @@ interface SkeletonProps {
 }
 
 export function Skeleton({ className = "", variant = "text" }: SkeletonProps) {
-  const baseStyles = "animate-pulse bg-white/5 rounded";
+  const baseStyles = "skeleton-shimmer rounded";
 
   const variantStyles = {
     text: "h-4 w-full rounded",

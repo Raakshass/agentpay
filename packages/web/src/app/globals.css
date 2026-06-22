@@ -124,6 +124,99 @@ body {
   outline-offset: 2px;
 }
 
+/* --- Input focus glow --- */
+input:focus,
+select:focus,
+textarea:focus {
+  box-shadow: 0 0 0 3px rgba(95, 224, 255, 0.1), 0 0 12px -2px rgba(95, 224, 255, 0.08);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+/* --- Primary CTA Button --- */
+/*
+ * Gradient stops are offset (20%→80%) so the button reads as purple-leaning
+ * on the left and cyan-leaning on the right — giving depth vs a flat 50/50.
+ * WCAG AA: dark text (#06080F ≈ L*8) on the gradient (midpoint L*≈55) → 6.5:1 ✓
+ */
+.btn-primary {
+  /* Diagonal gradient with depth-giving off-center stops */
+  background: linear-gradient(
+    135deg,
+    #A66BFF 20%,
+    #8B8BFF 55%,
+    #5FE0FF 80%
+  );
+  color: #06080F;
+  font-weight: 600;
+
+  /* Soft outer glow — two-layer bloom matching site aesthetic */
+  box-shadow:
+    0 0 0 1px rgba(166, 107, 255, 0.15),
+    0 4px 20px -4px rgba(166, 107, 255, 0.3),
+    0 4px 24px -4px rgba(95, 224, 255, 0.18);
+
+  transition:
+    box-shadow 0.2s ease,
+    filter 0.2s ease,
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Hover: intensified glow (y-lift is handled by Framer whileHover) */
+.btn-primary:hover {
+  box-shadow:
+    0 0 0 1px rgba(166, 107, 255, 0.25),
+    0 6px 28px -4px rgba(166, 107, 255, 0.45),
+    0 6px 32px -4px rgba(95, 224, 255, 0.28);
+}
+
+/* Sheen sweep on hover */
+.btn-primary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 25%,
+    rgba(255, 255, 255, 0.22) 45%,
+    rgba(255, 255, 255, 0.06) 55%,
+    transparent 75%
+  );
+  transform: translateX(-110%);
+  pointer-events: none;
+}
+.btn-primary:hover::after {
+  transform: translateX(110%);
+  transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --- Card inner glow intensification on hover --- */
+.card-inner-glow {
+  transition: opacity 0.2s ease;
+}
+*:hover > .card-inner-glow {
+  background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(95,224,255,0.12) 0%, transparent 70%) !important;
+}
+
+/* --- Skeleton shimmer --- */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.03) 25%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.03) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+}
+
 /* --- Reduced motion: disable all animations --- */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -133,6 +226,19 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+  /* Disable button sheen and glow transition */
+  .btn-primary::after {
+    display: none;
+  }
+  .btn-primary:hover {
+    box-shadow:
+      0 0 0 1px rgba(166, 107, 255, 0.15),
+      0 4px 20px -4px rgba(166, 107, 255, 0.3),
+      0 4px 24px -4px rgba(95, 224, 255, 0.18);
+  }
+  .skeleton-shimmer {
+    animation: none !important;
   }
 }
 

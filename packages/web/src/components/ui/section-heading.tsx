@@ -1,8 +1,9 @@
 "use client";
 
 import { type ReactNode } from "react";
-import { motion, useReducedMotion } from "framer-motion";
-import { fadeInUp, staggerContainer } from "@/lib/motion";
+import { motion } from "framer-motion";
+import { useMotionAllowed } from "@/hooks/use-reduced-motion";
+import { fadeInUp, staggerContainer, emphasisDelay } from "@/lib/motion";
 
 interface SectionHeadingProps {
   /** Text before the emphasis word */
@@ -29,12 +30,12 @@ export function SectionHeading({
   className = "",
   as: Tag = "h2",
 }: SectionHeadingProps) {
-  const prefersReducedMotion = useReducedMotion();
+  const motionOk = useMotionAllowed();
 
   return (
     <motion.div
       variants={staggerContainer}
-      initial={prefersReducedMotion ? "visible" : "hidden"}
+      initial={motionOk ? "hidden" : "visible"}
       whileInView="visible"
       viewport={{ once: true, margin: "-100px" }}
       className={["text-center", className].join(" ")}
@@ -52,7 +53,13 @@ export function SectionHeading({
         ].join(" ")}>
           {before}
           {before && " "}
-          <span className="heading-serif">{emphasis}</span>
+          {/* Emphasis word arrives a beat later via emphasisDelay */}
+          <motion.span
+            variants={emphasisDelay}
+            className="heading-serif inline-block"
+          >
+            {emphasis}
+          </motion.span>
           {after && ` ${after}`}
         </Tag>
       </motion.div>

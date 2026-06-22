@@ -1,10 +1,11 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { ArrowRight, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PillLabel } from "@/components/ui/pill-label";
 import { PortalScene } from "./portal-scene";
+import { useMotionAllowed } from "@/hooks/use-reduced-motion";
 import { EASE_OUT, DURATION, STAGGER } from "@/lib/motion";
 
 const headingWords = [
@@ -17,21 +18,21 @@ const headingWords = [
 const serifPhrase = "autonomous agents";
 
 export function HeroSection() {
-  const prefersReducedMotion = useReducedMotion();
+  const motionOk = useMotionAllowed();
 
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: prefersReducedMotion ? 0 : STAGGER.normal,
+        staggerChildren: motionOk ? STAGGER.normal : 0,
         delayChildren: 0.2,
       },
     },
   };
 
   const wordVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 16 },
     visible: {
       opacity: 1,
       y: 0,
@@ -39,17 +40,18 @@ export function HeroSection() {
     },
   };
 
+  /* The italic-serif emphasis arrives a beat after the plain words */
   const serifVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 16 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: DURATION.slow, ease: EASE_OUT },
+      transition: { duration: DURATION.slow, ease: EASE_OUT, delay: 0.15 },
     },
   };
 
   const fadeInVariants = {
-    hidden: { opacity: 0, y: 15 },
+    hidden: { opacity: 0, y: 12 },
     visible: {
       opacity: 1,
       y: 0,
@@ -68,7 +70,7 @@ export function HeroSection() {
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
         <motion.div
           variants={containerVariants}
-          initial={prefersReducedMotion ? "visible" : "hidden"}
+          initial={motionOk ? "hidden" : "visible"}
           animate="visible"
           className="text-center"
         >

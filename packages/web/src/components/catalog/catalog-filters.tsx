@@ -16,7 +16,7 @@ interface CatalogFiltersProps {
 }
 
 const selectClasses =
-  "appearance-none rounded-full bg-bg-card border border-border px-4 py-2 text-sm text-text-muted hover:border-border-hover focus:border-accent focus:outline-none transition-colors cursor-pointer";
+  "appearance-none rounded-full bg-bg-card border border-border px-4 py-2 text-sm text-text-muted hover:border-border-hover focus:border-accent focus:outline-none transition-all duration-200 cursor-pointer";
 
 export function CatalogFilters({
   value,
@@ -33,7 +33,7 @@ export function CatalogFilters({
           onChange={(e) => onChange({ ...value, search: e.target.value })}
           placeholder="Search providers…"
           aria-label="Search providers"
-          className="w-full rounded-full bg-bg-card border border-border pl-11 pr-4 py-2.5 text-sm text-text-primary placeholder:text-text-dim focus:border-accent focus:outline-none transition-colors"
+          className="w-full rounded-full bg-bg-card border border-border pl-11 pr-4 py-2.5 text-sm text-text-primary placeholder:text-text-dim focus:border-accent focus:outline-none transition-all duration-200"
         />
       </div>
 

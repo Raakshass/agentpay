@@ -1,11 +1,11 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
 import { CreditCard, Clock, Lock } from "lucide-react";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { PillLabel } from "@/components/ui/pill-label";
 import { Card } from "@/components/ui/card";
-import { fadeInUp, staggerContainer } from "@/lib/motion";
+import { FadeInView, fadeInUp } from "@/components/ui/fade-in-view";
+import { motion } from "framer-motion";
 
 const problems = [
   {
@@ -29,8 +29,6 @@ const problems = [
 ];
 
 export function ProblemSection() {
-  const prefersReducedMotion = useReducedMotion();
-
   return (
     <section className="py-16 sm:py-24 bg-bg-lifted" aria-label="Problem">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -41,13 +39,7 @@ export function ProblemSection() {
           subtitle="The entire payments stack was built for humans with identities and bank accounts. Autonomous software needs something fundamentally different."
         />
 
-        <motion.div
-          variants={staggerContainer}
-          initial={prefersReducedMotion ? "visible" : "hidden"}
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6"
-        >
+        <FadeInView stagger className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
           {problems.map((problem) => (
             <motion.div key={problem.title} variants={fadeInUp}>
               <Card hoverable={false} className="p-8 h-full">
@@ -63,7 +55,7 @@ export function ProblemSection() {
               </Card>
             </motion.div>
           ))}
-        </motion.div>
+        </FadeInView>
       </div>
     </section>
   );

@@ -1,12 +1,14 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { fadeInUp, staggerContainer, EASE_OUT } from "@/lib/motion";
+import { FadeInView, fadeInUp } from "@/components/ui/fade-in-view";
+import { useMotionAllowed } from "@/hooks/use-reduced-motion";
+import { EASE_OUT } from "@/lib/motion";
 
 export function CtaSection() {
-  const prefersReducedMotion = useReducedMotion();
+  const motionOk = useMotionAllowed();
 
   return (
     <section className="py-20 sm:py-32 bg-bg relative overflow-hidden" aria-label="Call to action">
@@ -14,13 +16,7 @@ export function CtaSection() {
       <div className="absolute inset-0 pointer-events-none glow-bloom" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <motion.div
-          variants={staggerContainer}
-          initial={prefersReducedMotion ? "visible" : "hidden"}
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          className="text-center"
-        >
+        <FadeInView stagger className="text-center">
           <motion.p
             variants={fadeInUp}
             className="text-sm tracking-[0.15em] uppercase text-text-muted mb-6"
@@ -36,15 +32,15 @@ export function CtaSection() {
             <motion.span
               className="heading-serif text-accent"
               animate={
-                prefersReducedMotion
-                  ? {}
-                  : {
+                motionOk
+                  ? {
                       textShadow: [
                         "0 0 20px rgba(95,224,255,0)",
                         "0 0 20px rgba(95,224,255,0.3)",
                         "0 0 20px rgba(95,224,255,0)",
                       ],
                     }
+                  : {}
               }
               transition={{
                 duration: 3,
@@ -75,7 +71,7 @@ export function CtaSection() {
               Watch Live Demo
             </Button>
           </motion.div>
-        </motion.div>
+        </FadeInView>
       </div>
     </section>
   );

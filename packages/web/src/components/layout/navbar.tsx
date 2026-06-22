@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Github } from "lucide-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { EASE_OUT } from "@/lib/motion";
 
@@ -31,9 +31,9 @@ export function Navbar() {
           {/* Logo */}
           <Link
             href="/"
-            className="flex items-center gap-2 text-text-primary font-semibold text-lg tracking-tight"
+            className="flex items-center gap-2 text-text-primary font-semibold text-lg tracking-tight transition-[filter] duration-200 hover:brightness-110"
           >
-            <div className="w-16 h-8 rounded-lg overflow-hidden flex items-center justify-center">
+            <div className="w-16 h-8 rounded-lg overflow-hidden flex items-center justify-center transition-shadow duration-300 hover:shadow-[0_0_16px_-4px_rgba(166,107,255,0.3)]">
               <img 
                 src="/conduit_animated_logo.svg" 
                 alt="Conduit Logo" 
@@ -75,8 +75,17 @@ export function Navbar() {
             })}
           </div>
 
-          {/* Wallet + mobile toggle */}
+          {/* GitHub + Wallet + mobile toggle */}
           <div className="flex items-center gap-3">
+            <a
+              href="https://github.com/Raakshass/agentpay"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub repository"
+              className="hidden sm:flex w-9 h-9 items-center justify-center rounded-full border border-border text-text-muted hover:text-text-primary hover:border-border-hover transition-colors duration-200"
+            >
+              <Github className="w-4 h-4" />
+            </a>
             <div className="hidden sm:block">
               <WalletMultiButton />
             </div>

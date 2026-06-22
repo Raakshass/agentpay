@@ -62,7 +62,7 @@ export function StatCounter({
 
   return (
     <div ref={ref} className={["text-center", className].join(" ")}>
-      <motion.span className="block text-4xl md:text-5xl font-bold font-mono tracking-tight text-text-primary">
+      <motion.span className="block text-4xl md:text-5xl font-bold font-mono tracking-tight text-text-primary mono-value">
         {display}
       </motion.span>
       <span className="block mt-2 text-sm text-text-muted tracking-wide uppercase">

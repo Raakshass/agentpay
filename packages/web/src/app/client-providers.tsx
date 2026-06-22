@@ -3,6 +3,7 @@
 import { type ReactNode } from "react";
 import { SolanaProvider } from "@/providers/solana-provider";
 import { NetworkGuard } from "@/components/layout/network-guard";
+import { PageTransition } from "@/components/layout/page-transition";
 
 /**
  * Client-side providers wrapper. Separated from layout.tsx
@@ -13,7 +14,7 @@ export function ClientProviders({ children }: { children: ReactNode }) {
   return (
     <SolanaProvider>
       <NetworkGuard />
-      {children}
+      <PageTransition>{children}</PageTransition>
     </SolanaProvider>
   );
 }

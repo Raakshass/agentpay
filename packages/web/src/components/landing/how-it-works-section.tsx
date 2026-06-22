@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { PillLabel } from "@/components/ui/pill-label";
+import { useMotionAllowed } from "@/hooks/use-reduced-motion";
 import { EASE_OUT } from "@/lib/motion";
 
 const steps = [
@@ -39,7 +40,7 @@ const steps = [
 
 export function HowItWorksSection() {
   const [activeStep, setActiveStep] = useState(0);
-  const prefersReducedMotion = useReducedMotion();
+  const motionOk = useMotionAllowed();
 
   // Auto-advance every 4 seconds
   const advanceStep = useCallback(() => {
@@ -47,10 +48,10 @@ export function HowItWorksSection() {
   }, []);
 
   useEffect(() => {
-    if (prefersReducedMotion) return;
+    if (!motionOk) return;
     const interval = setInterval(advanceStep, 4000);
     return () => clearInterval(interval);
-  }, [advanceStep, prefersReducedMotion]);
+  }, [advanceStep, motionOk]);
 
   const currentStep = steps[activeStep];
   if (!currentStep) return null;
@@ -75,7 +76,7 @@ export function HowItWorksSection() {
                 className={[
                   "relative flex-none sm:flex-1 py-3 px-4 text-xs font-medium tracking-wider uppercase text-center transition-all duration-300 whitespace-nowrap",
                   i === activeStep
-                    ? "bg-white/5 text-text-primary"
+                    ? "text-text-primary"
                     : "text-text-dim hover:text-text-muted",
                 ].join(" ")}
                 aria-label={`Step ${i + 1}: ${step.title}`}
@@ -83,8 +84,17 @@ export function HowItWorksSection() {
                 role="tab"
               >
                 {step.label}
+                {/* Sliding active indicator */}
                 {i === activeStep && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-flow" />
+                  <motion.span
+                    layoutId="step-indicator"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-flow"
+                    transition={{
+                      type: "spring",
+                      bounce: 0.15,
+                      duration: 0.5,
+                    }}
+                  />
                 )}
               </button>
             ))}
@@ -107,15 +117,15 @@ export function HowItWorksSection() {
               <motion.div
                 key={activeStep}
                 initial={
-                  prefersReducedMotion
-                    ? { opacity: 1 }
-                    : { opacity: 0, x: 10 }
+                  motionOk
+                    ? { opacity: 0, x: 10 }
+                    : { opacity: 1 }
                 }
                 animate={{ opacity: 1, x: 0 }}
                 exit={
-                  prefersReducedMotion
-                    ? { opacity: 0 }
-                    : { opacity: 0, x: -10 }
+                  motionOk
+                    ? { opacity: 0, x: -10 }
+                    : { opacity: 0 }
                 }
                 transition={{ duration: 0.3, ease: EASE_OUT }}
               >

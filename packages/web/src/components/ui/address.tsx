@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Check, Copy } from "lucide-react";
 import { truncateAddress } from "@/lib/format";
+import { EASE_OUT } from "@/lib/motion";
 
 interface AddressProps {
   address: string;
@@ -32,7 +34,7 @@ export function Address({
   }, [address]);
 
   return (
-    <button
+    <motion.button
       onClick={handleCopy}
       className={[
         "inline-flex items-center gap-1.5 group",
@@ -42,17 +44,48 @@ export function Address({
       ].join(" ")}
       title={`${address} — Click to copy`}
       aria-label={`Copy address ${truncateAddress(address, startChars, endChars)}`}
+      whileTap={{ scale: 0.97 }}
+      /* Flash overlay on copy */
+      animate={
+        copied
+          ? {
+              backgroundColor: [
+                "rgba(95,224,255,0.12)",
+                "rgba(95,224,255,0)",
+              ],
+            }
+          : {}
+      }
+      transition={{ duration: 0.4, ease: EASE_OUT }}
     >
       <span>{truncateAddress(address, startChars, endChars)}</span>
       {showCopyButton && (
         <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          {copied ? (
-            <Check className="w-3 h-3 text-success" />
-          ) : (
-            <Copy className="w-3 h-3" />
-          )}
+          <AnimatePresence mode="wait" initial={false}>
+            {copied ? (
+              <motion.span
+                key="check"
+                initial={{ opacity: 0, scale: 0.6 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.6 }}
+                transition={{ duration: 0.15, ease: EASE_OUT }}
+              >
+                <Check className="w-3 h-3 text-success" />
+              </motion.span>
+            ) : (
+              <motion.span
+                key="copy"
+                initial={{ opacity: 0, scale: 0.6 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.6 }}
+                transition={{ duration: 0.15, ease: EASE_OUT }}
+              >
+                <Copy className="w-3 h-3" />
+              </motion.span>
+            )}
+          </AnimatePresence>
         </span>
       )}
-    </button>
+    </motion.button>
   );
 }
