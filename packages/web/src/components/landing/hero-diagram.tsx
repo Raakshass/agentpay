@@ -34,13 +34,29 @@ export function HeroDiagram() {
         className="w-full h-auto"
         xmlns="http://www.w3.org/2000/svg"
       >
+        {/* Signature violet→cyan flow gradient (spans the Agent→API wire) */}
+        <defs>
+          <linearGradient
+            id="conduitFlow"
+            gradientUnits="userSpaceOnUse"
+            x1="120"
+            y1="100"
+            x2="380"
+            y2="100"
+          >
+            <stop offset="0%" stopColor="#A66BFF" />
+            <stop offset="100%" stopColor="#5FE0FF" />
+          </linearGradient>
+        </defs>
+
         {/* Connection line */}
         <line
           x1="120"
           y1="100"
           x2="380"
           y2="100"
-          stroke="rgba(255,255,255,0.08)"
+          stroke="url(#conduitFlow)"
+          strokeOpacity="0.45"
           strokeWidth="1"
           strokeDasharray="4 4"
         />
@@ -53,7 +69,7 @@ export function HeroDiagram() {
             cy="100"
             r="45"
             fill="none"
-            stroke="rgba(216,231,242,0.06)"
+            stroke="rgba(95,224,255,0.06)"
             strokeWidth="1"
           />
           {/* Inner circle */}
@@ -61,7 +77,7 @@ export function HeroDiagram() {
             cx="100"
             cy="100"
             r="35"
-            fill="rgba(12,13,18,0.9)"
+            fill="rgba(12,21,38,0.9)"
             stroke="rgba(255,255,255,0.1)"
             strokeWidth="1"
           />
@@ -98,16 +114,16 @@ export function HeroDiagram() {
             cy="100"
             r="45"
             fill="none"
-            stroke="rgba(216,231,242,0.06)"
+            stroke="rgba(95,224,255,0.06)"
             strokeWidth="1"
             animate={
               prefersReducedMotion
                 ? {}
                 : {
                     stroke: [
-                      "rgba(216,231,242,0.06)",
-                      "rgba(216,231,242,0.15)",
-                      "rgba(216,231,242,0.06)",
+                      "rgba(95,224,255,0.06)",
+                      "rgba(95,224,255,0.15)",
+                      "rgba(95,224,255,0.06)",
                     ],
                   }
             }
@@ -123,7 +139,7 @@ export function HeroDiagram() {
             cx="400"
             cy="100"
             r="35"
-            fill="rgba(12,13,18,0.9)"
+            fill="rgba(12,21,38,0.9)"
             stroke="rgba(255,255,255,0.1)"
             strokeWidth="1"
             animate={
@@ -132,7 +148,7 @@ export function HeroDiagram() {
                 : {
                     stroke: [
                       "rgba(255,255,255,0.1)",
-                      "rgba(216,231,242,0.3)",
+                      "rgba(95,224,255,0.3)",
                       "rgba(255,255,255,0.1)",
                     ],
                   }
@@ -177,7 +193,7 @@ export function HeroDiagram() {
             width="60"
             height="24"
             rx="12"
-            fill="rgba(12,13,18,0.9)"
+            fill="rgba(12,21,38,0.9)"
             stroke="rgba(255,255,255,0.08)"
             strokeWidth="1"
           />
@@ -185,7 +201,7 @@ export function HeroDiagram() {
             x="250"
             y="84"
             textAnchor="middle"
-            fill="#D8E7F2"
+            fill="url(#conduitFlow)"
             fontSize="10"
             fontFamily="var(--font-mono)"
             fontWeight="500"
@@ -200,7 +216,7 @@ export function HeroDiagram() {
             cx="120"
             cy="100"
             r="4"
-            fill="#D8E7F2"
+            fill="url(#conduitFlow)"
             animate={{
               cx: [120, 380],
               opacity: [0, 1, 1, 0],
@@ -222,7 +238,7 @@ export function HeroDiagram() {
             cy="100"
             r="8"
             fill="none"
-            stroke="rgba(216,231,242,0.2)"
+            stroke="rgba(95,224,255,0.2)"
             strokeWidth="1"
             animate={{
               cx: [120, 380],
@@ -246,17 +262,23 @@ function HeroDiagramStatic() {
   return (
     <div className="relative w-full max-w-lg mx-auto">
       <svg viewBox="0 0 500 200" className="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
-        <line x1="120" y1="100" x2="380" y2="100" stroke="rgba(255,255,255,0.08)" strokeWidth="1" strokeDasharray="4 4" />
-        <circle cx="100" cy="100" r="45" fill="none" stroke="rgba(216,231,242,0.06)" strokeWidth="1" />
-        <circle cx="100" cy="100" r="35" fill="rgba(12,13,18,0.9)" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+        <defs>
+          <linearGradient id="conduitFlow" gradientUnits="userSpaceOnUse" x1="120" y1="100" x2="380" y2="100">
+            <stop offset="0%" stopColor="#A66BFF" />
+            <stop offset="100%" stopColor="#5FE0FF" />
+          </linearGradient>
+        </defs>
+        <line x1="120" y1="100" x2="380" y2="100" stroke="url(#conduitFlow)" strokeOpacity="0.45" strokeWidth="1" strokeDasharray="4 4" />
+        <circle cx="100" cy="100" r="45" fill="none" stroke="rgba(95,224,255,0.06)" strokeWidth="1" />
+        <circle cx="100" cy="100" r="35" fill="rgba(12,21,38,0.9)" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
         <text x="100" y="96" textAnchor="middle" dominantBaseline="middle" fill="white" fontSize="20">🤖</text>
         <text x="100" y="158" textAnchor="middle" fill="#C2C4CC" fontSize="12">Agent</text>
-        <circle cx="400" cy="100" r="45" fill="none" stroke="rgba(216,231,242,0.06)" strokeWidth="1" />
-        <circle cx="400" cy="100" r="35" fill="rgba(12,13,18,0.9)" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+        <circle cx="400" cy="100" r="45" fill="none" stroke="rgba(95,224,255,0.06)" strokeWidth="1" />
+        <circle cx="400" cy="100" r="35" fill="rgba(12,21,38,0.9)" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
         <text x="400" y="96" textAnchor="middle" dominantBaseline="middle" fill="white" fontSize="20">⚡</text>
         <text x="400" y="158" textAnchor="middle" fill="#C2C4CC" fontSize="12">API</text>
-        <rect x="220" y="68" width="60" height="24" rx="12" fill="rgba(12,13,18,0.9)" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
-        <text x="250" y="84" textAnchor="middle" fill="#D8E7F2" fontSize="10">USDC</text>
+        <rect x="220" y="68" width="60" height="24" rx="12" fill="rgba(12,21,38,0.9)" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+        <text x="250" y="84" textAnchor="middle" fill="url(#conduitFlow)" fontSize="10">USDC</text>
       </svg>
     </div>
   );

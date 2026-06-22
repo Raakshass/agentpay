@@ -10,14 +10,8 @@ export function CtaSection() {
 
   return (
     <section className="py-20 sm:py-32 bg-bg relative overflow-hidden" aria-label="Call to action">
-      {/* Background glow */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(ellipse 50% 60% at 50% 50%, rgba(216,231,242,0.05) 0%, transparent 70%)",
-        }}
-      />
+      {/* Background glow — violet + cyan blooms */}
+      <div className="absolute inset-0 pointer-events-none glow-bloom" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
@@ -46,9 +40,9 @@ export function CtaSection() {
                   ? {}
                   : {
                       textShadow: [
-                        "0 0 20px rgba(216,231,242,0)",
-                        "0 0 20px rgba(216,231,242,0.3)",
-                        "0 0 20px rgba(216,231,242,0)",
+                        "0 0 20px rgba(95,224,255,0)",
+                        "0 0 20px rgba(95,224,255,0.3)",
+                        "0 0 20px rgba(95,224,255,0)",
                       ],
                     }
               }

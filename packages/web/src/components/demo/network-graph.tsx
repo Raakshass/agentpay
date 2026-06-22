@@ -70,7 +70,7 @@ export function NetworkGraph({ latest }: NetworkGraphProps) {
             <motion.circle
               key={latest.id}
               r={4}
-              fill="#D8E7F2"
+              fill="#5FE0FF"
               filter="url(#node-glow)"
               initial={{
                 cx: AGENT_X,
@@ -103,7 +103,7 @@ export function NetworkGraph({ latest }: NetworkGraphProps) {
               cx={AGENT_X}
               cy={ay}
               r={6}
-              fill="#0C0D12"
+              fill="#0C1526"
               stroke="rgba(255,255,255,0.25)"
               strokeWidth={1.5}
             />
@@ -126,8 +126,8 @@ export function NetworkGraph({ latest }: NetworkGraphProps) {
               cx={PROVIDER_X}
               cy={py}
               r={hitProvider === pi ? 9 : 6}
-              fill={hitProvider === pi ? "#D8E7F2" : "#0C0D12"}
-              stroke="rgba(216,231,242,0.5)"
+              fill={hitProvider === pi ? "#5FE0FF" : "#0C1526"}
+              stroke="rgba(95,224,255,0.5)"
               strokeWidth={1.5}
               filter={hitProvider === pi ? "url(#node-glow)" : undefined}
               style={{ transition: "r 0.2s ease, fill 0.2s ease" }}

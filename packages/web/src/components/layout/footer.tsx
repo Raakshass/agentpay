@@ -10,12 +10,12 @@ const footerLinks = {
   resources: [
     { label: "Documentation", href: "/docs" },
     { label: "SDK on npm", href: "https://www.npmjs.com/package/@conduit/sdk", external: true },
-    { label: "GitHub", href: "https://github.com/agentpay", external: true },
+    { label: "GitHub", href: "https://github.com/conduit", external: true },
   ],
 };
 
 const socialLinks = [
-  { label: "GitHub", href: "https://github.com/agentpay", icon: Github },
+  { label: "GitHub", href: "https://github.com/conduit", icon: Github },
   { label: "Docs", href: "/docs", icon: BookOpen },
   { label: "npm", href: "https://www.npmjs.com/package/@conduit/sdk", icon: Package },
 ];
@@ -28,8 +28,12 @@ export function Footer() {
           {/* Brand */}
           <div className="md:col-span-2">
             <Link href="/" className="flex items-center gap-2 text-text-primary font-semibold text-lg">
-              <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center">
-                <span className="text-black text-xs font-bold">AP</span>
+              <div className="w-16 h-8 rounded-lg overflow-hidden flex items-center justify-center">
+                <img 
+                  src="/conduit_animated_logo.svg" 
+                  alt="Conduit Logo" 
+                  className="w-full h-full object-cover"
+                />
               </div>
               Conduit
             </Link>

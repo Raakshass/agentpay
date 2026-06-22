@@ -4,7 +4,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PillLabel } from "@/components/ui/pill-label";
-import { HeroDiagram } from "./hero-diagram";
+import { PortalScene } from "./portal-scene";
 import { EASE_OUT, DURATION, STAGGER } from "@/lib/motion";
 
 const headingWords = [
@@ -62,14 +62,8 @@ export function HeroSection() {
       className="relative min-h-[70vh] sm:min-h-[80vh] md:min-h-[90vh] flex items-center justify-center overflow-hidden"
       aria-label="Hero"
     >
-      {/* Background radial glow */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(ellipse 50% 50% at 50% 40%, rgba(216,231,242,0.07) 0%, transparent 70%)",
-        }}
-      />
+      {/* Background radial glow — violet + cyan blooms */}
+      <div className="absolute inset-0 pointer-events-none glow-bloom" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
         <motion.div
@@ -97,7 +91,7 @@ export function HeroSection() {
             <br className="hidden sm:block" />
             <motion.span
               variants={serifVariants}
-              className="inline-block heading-serif text-accent"
+              className="inline-block heading-serif text-gradient"
             >
               {serifPhrase}
             </motion.span>
@@ -128,12 +122,12 @@ export function HeroSection() {
             </Button>
           </motion.div>
 
-          {/* Hero diagram */}
+          {/* Hero portal scene */}
           <motion.div
             variants={fadeInVariants}
-            className="mt-16 flex justify-center"
+            className="mt-12 flex justify-center"
           >
-            <HeroDiagram />
+            <PortalScene />
           </motion.div>
         </motion.div>
       </div>

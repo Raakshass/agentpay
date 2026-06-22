@@ -51,7 +51,7 @@ export function Card({
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 60% 40% at 50% 0%, rgba(216,231,242,0.04) 0%, transparent 70%)",
+            "radial-gradient(ellipse 60% 40% at 50% 0%, rgba(95,224,255,0.05) 0%, transparent 70%)",
         }}
       />
       <div className="relative z-10">{children}</div>

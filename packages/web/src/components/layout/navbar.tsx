@@ -33,8 +33,12 @@ export function Navbar() {
             href="/"
             className="flex items-center gap-2 text-text-primary font-semibold text-lg tracking-tight"
           >
-            <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center">
-              <span className="text-black text-xs font-bold">AP</span>
+            <div className="w-16 h-8 rounded-lg overflow-hidden flex items-center justify-center">
+              <img 
+                src="/conduit_animated_logo.svg" 
+                alt="Conduit Logo" 
+                className="w-full h-full object-cover"
+              />
             </div>
             Conduit
           </Link>

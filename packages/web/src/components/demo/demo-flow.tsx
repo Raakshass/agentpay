@@ -49,7 +49,7 @@ function ActorCard({
       ].join(" ")}
       style={
         active
-          ? { boxShadow: "0 0 40px -12px rgba(216,231,242,0.25)" }
+          ? { boxShadow: "0 0 40px -12px rgba(95,224,255,0.25)" }
           : undefined
       }
     >
@@ -90,7 +90,7 @@ function ActorCard({
 
 const toneClass: Record<Pulse["tone"], string> = {
   value:
-    "border-accent/40 bg-accent-glow-strong text-accent shadow-[0_0_20px_-4px_rgba(216,231,242,0.6)]",
+    "border-accent/40 bg-accent-glow-strong text-accent shadow-[0_0_20px_-4px_rgba(95,224,255,0.6)]",
   iou: "border-dashed border-border bg-bg-card text-text-muted",
   data: "border-border bg-white/5 text-text-dim",
 };
@@ -141,7 +141,7 @@ function FlowLane({
           left: `${actorCenterPct("agent")}%`,
           width: `${actorCenterPct("provider") - actorCenterPct("agent")}%`,
           borderTop: step.onChain
-            ? "1px solid rgba(216,231,242,0.25)"
+            ? "1px solid rgba(95,224,255,0.25)"
             : "1px dashed rgba(255,255,255,0.22)",
         }}
       />

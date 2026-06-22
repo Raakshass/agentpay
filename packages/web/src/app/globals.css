@@ -3,23 +3,35 @@
 @import "tailwindcss";
 
 /* ============================================================
-   Conduit — Global Styles (Landio-inspired dark monochromatic)
+   Conduit — Global Styles (violet→cyan midnight)
    ============================================================ */
 
 /* --- Tailwind v4 Theme --- */
 @theme {
-  --color-bg: #000000;
-  --color-bg-lifted: #0A0B0F;
-  --color-bg-card: #0C0D12;
-  --color-bg-card-hover: #10111A;
-  --color-text-primary: #FFFFFF;
-  --color-text-muted: #C2C4CC;
-  --color-text-dim: #6B6D78;
-  --color-border: rgba(255, 255, 255, 0.08);
-  --color-border-hover: rgba(255, 255, 255, 0.15);
-  --color-accent: #D8E7F2;
-  --color-accent-glow: rgba(216, 231, 242, 0.07);
-  --color-accent-glow-strong: rgba(216, 231, 242, 0.12);
+  /* Backgrounds — midnight */
+  --color-bg: #070B14;
+  --color-bg-lifted: #0A1020;
+  --color-bg-alt: #0C1424;
+  --color-bg-card: #0C1526;
+  --color-bg-card-hover: #0F1B30;
+
+  /* Text */
+  --color-text-primary: #EAF1FF;
+  --color-text-muted: #9DB2D4;
+  --color-text-dim: #5E739B;
+
+  /* Borders — cool hairline */
+  --color-border: rgba(180, 210, 255, 0.10);
+  --color-border-hover: rgba(180, 210, 255, 0.18);
+
+  /* Signature accents — violet → cyan */
+  --color-accent: #5FE0FF;             /* cyan core (primary interactive) */
+  --color-accent-deep: #22B8E6;        /* cyan deep */
+  --color-accent-violet: #A66BFF;      /* violet core */
+  --color-accent-violet-deep: #7C3AED; /* violet deep */
+  --color-accent-glow: rgba(95, 224, 255, 0.08);
+  --color-accent-glow-strong: rgba(95, 224, 255, 0.14);
+
   --color-success: #34D399;
   --color-error: #F87171;
   --color-warning: #FBBF24;
@@ -27,6 +39,31 @@
   --font-sans: "Inter Tight", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-serif: "Instrument Serif", Georgia, "Times New Roman", serif;
   --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", monospace;
+}
+
+/* --- Brand gradient + glow tokens --- */
+:root {
+  --gradient-flow: linear-gradient(90deg, #A66BFF 0%, #5FE0FF 100%);
+  --gradient-flow-135: linear-gradient(135deg, #A66BFF 0%, #5FE0FF 100%);
+  --glow-violet: rgba(166, 107, 255, 0.16);
+  --glow-cyan: rgba(95, 224, 255, 0.16);
+}
+
+/* Signature "value flowing" gradient — violet→cyan */
+.text-gradient {
+  background-image: var(--gradient-flow);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.bg-gradient-flow {
+  background-image: var(--gradient-flow-135);
+}
+/* Soft dual radial bloom (violet + cyan) for hero / key surfaces */
+.glow-bloom {
+  background:
+    radial-gradient(ellipse 45% 55% at 35% 40%, var(--glow-violet) 0%, transparent 70%),
+    radial-gradient(ellipse 45% 55% at 68% 55%, var(--glow-cyan) 0%, transparent 70%);
 }
 
 /* --- Base --- */
@@ -50,11 +87,11 @@ body {
   background: var(--color-bg);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(95, 224, 255, 0.18);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(95, 224, 255, 0.32);
 }
 
 /* --- Serif italic emphasis for headings --- */
