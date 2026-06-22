@@ -56,6 +56,9 @@ export interface ActiveSession {
   /** Total USDC deposited in atomic units */
   depositAmountAtomic: number;
 
+  /** USDC mint address for this channel (overrides env default if set) */
+  usdcMint?: string;
+
   /** The latest signed IOU from the agent (highest cumulative amount) */
   latestIou: SignedIou | null;
 
@@ -79,7 +82,8 @@ export function registerSession(
   channelId: string,
   agentPublicKey: string,
   providerPublicKey: string,
-  depositAmountAtomic: number
+  depositAmountAtomic: number,
+  usdcMint?: string
 ): ActiveSession {
   if (activeSessions.has(sessionPda)) {
     throw new Error(`Session ${sessionPda} is already registered`);
@@ -91,6 +95,7 @@ export function registerSession(
     agentPublicKey,
     providerPublicKey,
     depositAmountAtomic,
+    usdcMint,
     latestIou: null,
     latestIouSignature: null,
     registeredAt: Date.now(),

@@ -53,6 +53,30 @@ const ESCROW_PROGRAM_ID = new PublicKey(
   process.env["ESCROW_PROGRAM_ID"] ?? "8vH1iEpbwe31WGqSGd9a8qkKh7SCHW8MsaSULVsxskRw"
 );
 
+/**
+ * Gateway server's public key — used as the authorized settler in escrow.
+ * Set via GATEWAY_PUBKEY env var or fetched from the gateway /health endpoint.
+ */
+const GATEWAY_PUBKEY_STR = process.env["GATEWAY_PUBKEY"] ?? "";
+
+/**
+ * Pre-funded deployer keypair (avoids devnet airdrop rate limits).
+ * Set FUNDER_KEY env var to the JSON byte array from solana-keygen.
+ * If not set, falls back to airdrop (which may fail on public devnet RPC).
+ */
+function loadFunderKeypair(): Keypair | null {
+  const raw = process.env["FUNDER_KEY"];
+  if (!raw) return null;
+  try {
+    const bytes = JSON.parse(raw) as number[];
+    return Keypair.fromSecretKey(Uint8Array.from(bytes));
+  } catch {
+    console.log("  ⚠ FUNDER_KEY env var is invalid, falling back to airdrop");
+    return null;
+  }
+}
+const FUNDER = loadFunderKeypair();
+
 /** Atomic USDC units (6 decimals) */
 const ONE_USDC = 1_000_000;
 const DEPOSIT_USDC = 1;
@@ -116,9 +140,32 @@ function serializeIouBinary(channelIdBytes: Uint8Array, cumulativeAtomic: number
 
 async function airdropSol(connection: Connection, pubkey: PublicKey, sol: number): Promise<void> {
   console.log(`  airdropping ${sol} SOL to ${pubkey.toBase58().slice(0, 8)}...`);
-  const sig = await connection.requestAirdrop(pubkey, sol * LAMPORTS_PER_SOL);
-  await connection.confirmTransaction(sig, "confirmed");
-  console.log(`  ✓ airdrop confirmed: ${explorerTx(sig)}`);
+  const maxRetries = 5;
+  let remaining = sol;
+
+  while (remaining > 0) {
+    const chunk = Math.min(remaining, 1); // devnet limits 1 SOL per request
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const sig = await connection.requestAirdrop(pubkey, chunk * LAMPORTS_PER_SOL);
+        await connection.confirmTransaction(sig, "confirmed");
+        console.log(`  ✓ airdrop ${chunk} SOL confirmed (attempt ${attempt})`);
+        remaining -= chunk;
+        break;
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.log(`  ⚠ airdrop attempt ${attempt}/${maxRetries} failed: ${msg.slice(0, 80)}`);
+        if (attempt === maxRetries) {
+          throw new Error(`airdrop failed after ${maxRetries} attempts`);
+        }
+        const backoff = Math.min(1000 * Math.pow(2, attempt), 30000);
+        console.log(`    retrying in ${backoff / 1000}s...`);
+        await sleep(backoff);
+      }
+    }
+    // Small delay between chunks
+    if (remaining > 0) await sleep(2000);
+  }
 }
 
 async function sleep(ms: number): Promise<void> {
@@ -134,33 +181,52 @@ async function createTestWallets() {
 
   const agent = Keypair.generate();
   const provider = Keypair.generate();
-  const gateway = Keypair.generate();
 
   console.log(`  agent:    ${agent.publicKey.toBase58()}`);
   console.log(`            ${explorerAddr(agent.publicKey.toBase58())}`);
   console.log(`  provider: ${provider.publicKey.toBase58()}`);
-  console.log(`  gateway:  ${gateway.publicKey.toBase58()}`);
 
-  return { agent, provider, gateway };
+  return { agent, provider };
 }
 
 // ---------------------------------------------------------------------------
 // Step 2: Fund wallets + create USDC mint
 // ---------------------------------------------------------------------------
 
+async function transferSol(
+  connection: Connection,
+  from: Keypair,
+  to: PublicKey,
+  sol: number
+): Promise<void> {
+  const tx = new Transaction().add(
+    SystemProgram.transfer({
+      fromPubkey: from.publicKey,
+      toPubkey: to,
+      lamports: sol * LAMPORTS_PER_SOL,
+    })
+  );
+  const sig = await sendAndConfirmTransaction(connection, tx, [from]);
+  console.log(`  ✓ transferred ${sol} SOL to ${to.toBase58().slice(0, 8)}...`);
+}
+
 async function fundWallets(
   connection: Connection,
   agent: Keypair,
   provider: Keypair,
-  gateway: Keypair
 ) {
-  console.log("\n═══ step 2: airdrop sol ═══");
+  console.log("\n═══ step 2: fund wallets ═══");
 
-  await airdropSol(connection, agent.publicKey, 2);
-  await sleep(1000);
-  await airdropSol(connection, gateway.publicKey, 1);
-  await sleep(1000);
-  // Provider doesn't need SOL for this test
+  if (FUNDER) {
+    console.log(`  using pre-funded deployer: ${FUNDER.publicKey.toBase58().slice(0, 8)}...`);
+    const balance = await connection.getBalance(FUNDER.publicKey);
+    console.log(`  funder balance: ${balance / LAMPORTS_PER_SOL} SOL`);
+    await transferSol(connection, FUNDER, agent.publicKey, 0.5);
+  } else {
+    console.log("  no FUNDER_KEY set, using airdrop (may be rate-limited)...");
+    await airdropSol(connection, agent.publicKey, 1);
+    await sleep(1000);
+  }
 }
 
 async function createDevnetUsdcMint(
@@ -306,7 +372,8 @@ async function openGatewaySession(
   channelId: string,
   agentPublicKey: string,
   providerPublicKey: string,
-  depositAtomic: number
+  depositAtomic: number,
+  usdcMint: string
 ): Promise<void> {
   console.log(`\n═══ step 4: open gateway session ═══`);
 
@@ -319,6 +386,7 @@ async function openGatewaySession(
       agentPublicKey,
       providerPublicKey,
       depositAmountAtomic: depositAtomic,
+      usdcMint,
     }),
   });
 
@@ -485,10 +553,35 @@ async function main() {
   const connection = new Connection(RPC_URL, "confirmed");
 
   // Step 1: Create wallets
-  const { agent, provider, gateway } = await createTestWallets();
+  const { agent, provider } = await createTestWallets();
+
+  // Resolve the gateway server's public key
+  let gatewayPubkey: PublicKey;
+  if (GATEWAY_PUBKEY_STR) {
+    gatewayPubkey = new PublicKey(GATEWAY_PUBKEY_STR);
+  } else {
+    // Fetch from gateway /health endpoint or use env
+    console.log("  fetching gateway pubkey from server...");
+    const resp = await fetch(`${GATEWAY_URL}/health`);
+    const healthData = await resp.json() as Record<string, unknown>;
+    const pubkey = healthData["gatewayPublicKey"] as string | undefined;
+    if (pubkey) {
+      gatewayPubkey = new PublicKey(pubkey);
+    } else {
+      // Fallback: parse from GATEWAY_WALLET_PRIVATE_KEY env
+      const rawKey = process.env["GATEWAY_WALLET_PRIVATE_KEY"];
+      if (rawKey) {
+        const bytes = JSON.parse(rawKey) as number[];
+        gatewayPubkey = Keypair.fromSecretKey(Uint8Array.from(bytes)).publicKey;
+      } else {
+        throw new Error("Cannot determine gateway public key. Set GATEWAY_PUBKEY env var.");
+      }
+    }
+  }
+  console.log(`  gateway:  ${gatewayPubkey.toBase58()}`);
 
   // Step 2: Fund wallets
-  await fundWallets(connection, agent, provider, gateway);
+  await fundWallets(connection, agent, provider);
 
   // Step 2b: Create test USDC mint (agent is mint authority for testing)
   const usdcMint = await createDevnetUsdcMint(connection, agent);
@@ -502,7 +595,7 @@ async function main() {
     connection,
     agent,
     provider.publicKey,
-    gateway.publicKey,
+    gatewayPubkey,
     usdcMint,
     DEPOSIT_USDC
   );
@@ -516,7 +609,8 @@ async function main() {
     channelIdBase58,
     agent.publicKey.toBase58(),
     provider.publicKey.toBase58(),
-    depositAtomic
+    depositAtomic,
+    usdcMint.toBase58()
   );
 
   // Step 5: Make API calls

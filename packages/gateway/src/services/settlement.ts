@@ -191,7 +191,8 @@ export async function settleSessionOnChain(
 
   try {
     const escrowProgramId = new PublicKey(escrowProgramIdStr);
-    const usdcMint = new PublicKey(environmentConfig.solana.usdcMintAddress);
+    const usdcMintStr = session.usdcMint ?? environmentConfig.solana.usdcMintAddress;
+    const usdcMint = new PublicKey(usdcMintStr);
     const connection = new Connection(environmentConfig.solana.rpcUrl, "confirmed");
     const gatewayKeypair = getGatewayKeypair();
 

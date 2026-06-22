@@ -27,12 +27,13 @@ export function registerSessionRoutes(application: Express): void {
    * For MVP, we trust the agent's claim and verify lazily.
    */
   application.post("/session/open", (request, response) => {
-    const { sessionPda, channelId, agentPublicKey, providerPublicKey, depositAmountAtomic } = request.body as {
+    const { sessionPda, channelId, agentPublicKey, providerPublicKey, depositAmountAtomic, usdcMint } = request.body as {
       sessionPda?: string;
       channelId?: string;
       agentPublicKey?: string;
       providerPublicKey?: string;
       depositAmountAtomic?: number;
+      usdcMint?: string;
     };
 
     if (!sessionPda || !channelId || !agentPublicKey || !providerPublicKey || !depositAmountAtomic) {
@@ -56,7 +57,7 @@ export function registerSessionRoutes(application: Express): void {
     }
 
     try {
-      const session = registerSession(sessionPda, channelId, agentPublicKey, providerPublicKey, depositAmountAtomic);
+      const session = registerSession(sessionPda, channelId, agentPublicKey, providerPublicKey, depositAmountAtomic, usdcMint);
 
       response.status(201).json({
         status: "active",
