@@ -39,6 +39,14 @@ function ActorCard({
 }) {
   const meta = ACTORS.find((a) => a.id === id)!;
   const Icon = meta.icon;
+  // Source (agent) leans violet; provider/intermediaries lean cyan.
+  const isSource = id === "agent";
+  const activeGlow = isSource
+    ? "0 0 40px -12px rgba(166,107,255,0.30)"
+    : "0 0 40px -12px rgba(95,224,255,0.25)";
+  const activeIcon = isSource
+    ? "border-accent-violet/40 bg-[rgba(166,107,255,0.12)] text-accent-violet"
+    : "border-accent/30 bg-accent-glow text-accent";
   return (
     <motion.div
       animate={{ opacity: active ? 1 : 0.35 }}
@@ -47,18 +55,12 @@ function ActorCard({
         "rounded-xl border bg-bg-card px-3 py-4 text-center",
         active ? "border-border-hover" : "border-border",
       ].join(" ")}
-      style={
-        active
-          ? { boxShadow: "0 0 40px -12px rgba(95,224,255,0.25)" }
-          : undefined
-      }
+      style={active ? { boxShadow: activeGlow } : undefined}
     >
       <div
         className={[
           "mx-auto mb-2 flex h-9 w-9 items-center justify-center rounded-lg border",
-          active
-            ? "border-accent/30 bg-accent-glow text-accent"
-            : "border-border text-text-dim",
+          active ? activeIcon : "border-border text-text-dim",
         ].join(" ")}
       >
         <Icon className="h-4 w-4" />
@@ -90,7 +92,7 @@ function ActorCard({
 
 const toneClass: Record<Pulse["tone"], string> = {
   value:
-    "border-accent/40 bg-accent-glow-strong text-accent shadow-[0_0_20px_-4px_rgba(95,224,255,0.6)]",
+    "border-0 bg-gradient-flow text-[#06080F] font-semibold shadow-[0_0_20px_-4px_rgba(95,224,255,0.6)]",
   iou: "border-dashed border-border bg-bg-card text-text-muted",
   data: "border-border bg-white/5 text-text-dim",
 };
@@ -390,7 +392,7 @@ export function DemoFlow() {
                   >
                     <motion.div
                       key={`${playKey}-${i}-${playing}`}
-                      className="h-full bg-accent"
+                      className="h-full bg-gradient-flow"
                       initial={{ width: i < stepIndex ? "100%" : "0%" }}
                       animate={{
                         width:

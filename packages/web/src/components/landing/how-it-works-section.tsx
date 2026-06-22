@@ -73,9 +73,9 @@ export function HowItWorksSection() {
                 key={i}
                 onClick={() => setActiveStep(i)}
                 className={[
-                  "flex-none sm:flex-1 py-3 px-4 text-xs font-medium tracking-wider uppercase text-center transition-all duration-300 whitespace-nowrap",
+                  "relative flex-none sm:flex-1 py-3 px-4 text-xs font-medium tracking-wider uppercase text-center transition-all duration-300 whitespace-nowrap",
                   i === activeStep
-                    ? "bg-white/5 text-text-primary border-b-2 border-accent"
+                    ? "bg-white/5 text-text-primary"
                     : "text-text-dim hover:text-text-muted",
                 ].join(" ")}
                 aria-label={`Step ${i + 1}: ${step.title}`}
@@ -83,6 +83,9 @@ export function HowItWorksSection() {
                 role="tab"
               >
                 {step.label}
+                {i === activeStep && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-flow" />
+                )}
               </button>
             ))}
           </div>
@@ -90,7 +93,7 @@ export function HowItWorksSection() {
           {/* Progress bar */}
           <div className="h-px bg-border relative mt-0">
             <motion.div
-              className="absolute top-0 left-0 h-full bg-accent/30"
+              className="absolute top-0 left-0 h-full bg-gradient-flow"
               animate={{
                 width: `${((activeStep + 1) / steps.length) * 100}%`,
               }}

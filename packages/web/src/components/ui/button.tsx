@@ -13,7 +13,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    "bg-white text-black hover:bg-white/90 active:bg-white/80",
+    "bg-gradient-flow text-[#06080F] font-semibold hover:opacity-90 active:opacity-80",
   ghost:
     "bg-transparent text-white hover:bg-white/5 active:bg-white/10",
   outline:

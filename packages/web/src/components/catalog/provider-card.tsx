@@ -35,10 +35,15 @@ export function ProviderCard({ provider, onSelect }: ProviderCardProps) {
 
         <div className="flex flex-wrap gap-2">
           <Badge label={categoryLabel(provider.category)} variant="category" />
-          <Badge
-            label={agentTypeLabel(provider.agentType)}
-            variant="agentType"
-          />
+          {/* Skip the agent-type badge when it would just duplicate the
+              category label (e.g. category "Agent" + agent_type "Agent"). */}
+          {agentTypeLabel(provider.agentType) !==
+            categoryLabel(provider.category) && (
+            <Badge
+              label={agentTypeLabel(provider.agentType)}
+              variant="agentType"
+            />
+          )}
         </div>
 
         <div className="mt-auto flex items-end justify-between pt-2">

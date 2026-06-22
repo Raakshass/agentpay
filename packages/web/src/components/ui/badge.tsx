@@ -7,10 +7,12 @@ interface BadgeProps {
 }
 
 const variantStyles: Record<string, string> = {
+  // Subtle outline — taxonomy / grouping
   category:
-    "bg-white/5 text-text-muted border-border",
+    "bg-transparent text-text-muted border-border",
+  // Accent-filled — what kind of endpoint this is
   agentType:
-    "bg-accent-glow text-accent border-accent/10",
+    "bg-accent/15 text-accent border-accent/40",
   default:
     "bg-white/5 text-text-muted border-border",
 };

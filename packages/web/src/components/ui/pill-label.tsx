@@ -26,7 +26,7 @@ export function PillLabel({ icon = "✦", label, className = "" }: PillLabelProp
         className,
       ].join(" ")}
     >
-      <span className="text-accent text-[10px]">{icon}</span>
+      <span className="text-gradient text-[10px]">{icon}</span>
       {label}
     </motion.div>
   );
