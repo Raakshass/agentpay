@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches: [main, feat/*]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --ignore-scripts
+
+      - name: Typecheck SDK
+        run: pnpm --filter @conduit/sdk run typecheck
+
+      - name: Build SDK
+        run: pnpm --filter @conduit/sdk run build
+
+      - name: Typecheck Gateway
+        run: pnpm --filter @conduit/gateway run typecheck
+
+      - name: Build Gateway
+        run: pnpm --filter @conduit/gateway run build
+
+      - name: Build Web
+        run: pnpm --filter @conduit/web run build
+        env:
+          NEXT_PUBLIC_SOLANA_NETWORK: devnet
+          NEXT_PUBLIC_RPC_URL: https://api.devnet.solana.com
+          NEXT_PUBLIC_REGISTRY_PROGRAM_ID: XGXadfKb7mru5wcr1yUZWSeBLVUY6NFDAriBUUMiLbk
+          NEXT_PUBLIC_ESCROW_PROGRAM_ID: 8vH1iEpbwe31WGqSGd9a8qkKh7SCHW8MsaSULVsxskRw
+          NEXT_PUBLIC_USDC_MINT: 4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU
+          NEXT_PUBLIC_GATEWAY_URL: http://localhost:4020
+
+  anchor-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Solana CLI
+        run: |
+          sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+
+      - name: Install Anchor CLI
+        run: |
+          cargo install --git https://github.com/coral-xyz/anchor avm --locked --force
+          avm install latest
+          avm use latest
+
+      - name: Build contracts
+        working-directory: programs/conduit-contracts
+        run: anchor build

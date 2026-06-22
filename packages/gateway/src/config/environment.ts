@@ -30,8 +30,8 @@ const environmentSchema = z.object({
   }),
 
   upstreamApis: z.object({
-    openWeatherMapApiKey: z.string().min(1),
-    heliusApiKey: z.string().min(1),
+    openWeatherMapApiKey: z.string().default(""),
+    heliusApiKey: z.string().default(""),
   }),
 
   contracts: z.object({
