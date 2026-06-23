@@ -50,7 +50,8 @@ function loadEnvironmentConfig(): EnvironmentConfig {
       usdcMintAddress: process.env["USDC_MINT_ADDRESS"],
     },
     gateway: {
-      port: process.env["GATEWAY_PORT"],
+      // Prefer GATEWAY_PORT; fall back to PORT (injected by Railway/most PaaS).
+      port: process.env["GATEWAY_PORT"] ?? process.env["PORT"],
       host: process.env["GATEWAY_HOST"],
       walletPrivateKey: process.env["GATEWAY_WALLET_PRIVATE_KEY"],
       revenueWalletAddress: process.env["GATEWAY_REVENUE_WALLET_ADDRESS"],

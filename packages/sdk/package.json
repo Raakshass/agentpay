@@ -3,8 +3,16 @@
   "version": "0.1.0",
   "description": "TypeScript SDK for AI agents to interact with Conduit state channel gateway. Handles session management, IOU signing, and API consumption.",
   "type": "module",
+  "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "dev": "tsc --watch",
     "build": "tsc",
@@ -12,7 +20,8 @@
     "test:watch": "vitest",
     "test:e2e": "tsx tests/e2e-devnet.ts",
     "typecheck": "tsc --noEmit",
-    "clean": "rm -rf dist coverage"
+    "clean": "rm -rf dist coverage",
+    "prepublishOnly": "pnpm build"
   },
   "dependencies": {
     "@noble/ed25519": "^2.1.0"
