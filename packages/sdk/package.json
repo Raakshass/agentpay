@@ -1,5 +1,5 @@
 {
-  "name": "@conduit/sdk",
+  "name": "conduit-pay",
   "version": "0.1.0",
   "description": "TypeScript SDK for AI agents to interact with Conduit state channel gateway. Handles session management, IOU signing, and API consumption.",
   "type": "module",

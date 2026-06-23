@@ -15,14 +15,14 @@ const sections = [
     title: "Quickstart",
     description:
       "Install the SDK, open a state channel, and make your first paid API call — all in under 10 lines of TypeScript.",
-    code: `npm install @conduit/sdk`,
+    code: `npm install conduit-pay`,
   },
   {
     icon: Code2,
     title: "SDK Reference",
     description:
-      "Full API documentation for the @conduit/sdk package: ConduitSession, channel management, IOU signing, and settlement.",
-    code: `import { ConduitSession } from "@conduit/sdk";
+      "Full API documentation for the conduit-pay package: ConduitSession, channel management, IOU signing, and settlement.",
+    code: `import { ConduitSession } from "conduit-pay";
 
 const session = new ConduitSession({
   gatewayUrl: "http://localhost:4020",

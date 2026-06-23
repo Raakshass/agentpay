@@ -8,7 +8,7 @@
     "demo": "tsx src/weather-agent.ts"
   },
   "dependencies": {
-    "@conduit/sdk": "workspace:*"
+    "conduit-pay": "workspace:*"
   },
   "devDependencies": {
     "tsx": "^4.16.0",

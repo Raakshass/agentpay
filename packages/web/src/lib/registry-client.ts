@@ -1,7 +1,7 @@
 /**
  * Conduit Registry — on-chain reader & instruction builder.
  *
- * The shipped `@conduit/sdk` is gateway-facing and has no on-chain registry
+ * The shipped `conduit-pay` SDK is gateway-facing and has no on-chain registry
  * helpers, so the web app reads `ApiProvider` accounts directly from the Solana
  * RPC and builds Anchor instructions by hand. There is no generated IDL in the
  * web package, so account/instruction layouts are encoded manually to match the

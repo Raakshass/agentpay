@@ -11,7 +11,7 @@
  * Replace with real escrow deposit when Vineet's contract is ready.
  */
 
-import { ConduitSession, fetchCatalog } from "@conduit/sdk";
+import { ConduitSession, fetchCatalog } from "conduit-pay";
 
 const GATEWAY_URL = "http://localhost:4020";
 

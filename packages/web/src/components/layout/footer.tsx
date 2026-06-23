@@ -10,7 +10,7 @@ const footerLinks = {
   ],
   resources: [
     { label: "Documentation", href: "/docs" },
-    { label: "SDK on npm", href: "https://www.npmjs.com/package/@conduit/sdk", external: true },
+    { label: "SDK on npm", href: "https://www.npmjs.com/package/conduit-pay", external: true },
     { label: "GitHub", href: "https://github.com/Raakshass/agentpay", external: true },
   ],
 };
@@ -18,7 +18,7 @@ const footerLinks = {
 const socialLinks = [
   { label: "GitHub", href: "https://github.com/Raakshass/agentpay", icon: Github },
   { label: "Docs", href: "/docs", icon: BookOpen },
-  { label: "npm", href: "https://www.npmjs.com/package/@conduit/sdk", icon: Package },
+  { label: "npm", href: "https://www.npmjs.com/package/conduit-pay", icon: Package },
 ];
 
 export function Footer() {

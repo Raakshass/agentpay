@@ -1,4 +1,4 @@
-# @conduit/sdk
+# conduit-pay
 
 TypeScript SDK for AI agents to consume paid Web3 / DePIN APIs over [Conduit](../../README.md) state channels.
 
@@ -18,13 +18,13 @@ The SDK handles the hard parts of the payment protocol for you:
 Inside the monorepo it's a workspace dependency:
 
 ```json
-{ "dependencies": { "@conduit/sdk": "workspace:*" } }
+{ "dependencies": { "conduit-pay": "workspace:*" } }
 ```
 
 Standalone:
 
 ```bash
-pnpm add @conduit/sdk
+pnpm add conduit-pay
 ```
 
 The only runtime dependency is [`@noble/ed25519`](https://github.com/paulmillr/noble-ed25519). Requires an environment with `fetch`, `btoa`, and `TextEncoder` (Node ≥ 20 or any modern browser).
@@ -34,7 +34,7 @@ The only runtime dependency is [`@noble/ed25519`](https://github.com/paulmillr/n
 ## Quick start
 
 ```typescript
-import { ConduitSession, fetchCatalog } from "@conduit/sdk";
+import { ConduitSession, fetchCatalog } from "conduit-pay";
 
 const GATEWAY = "http://localhost:4020";
 
