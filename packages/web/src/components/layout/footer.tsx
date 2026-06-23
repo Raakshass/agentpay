@@ -3,8 +3,9 @@ import { Github, BookOpen, Package } from "lucide-react";
 
 const footerLinks = {
   product: [
-    { label: "Catalog", href: "/catalog" },
-    { label: "Providers", href: "/providers" },
+    // Temporarily hidden — these routes show mock data until the registry is live.
+    // { label: "Catalog", href: "/catalog" },
+    // { label: "Providers", href: "/providers" },
     { label: "Live Demo", href: "/demo" },
   ],
   resources: [

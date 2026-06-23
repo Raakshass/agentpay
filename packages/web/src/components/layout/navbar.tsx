@@ -10,8 +10,9 @@ import { EASE_OUT } from "@/lib/motion";
 
 const navLinks = [
   { href: "/", label: "Home" },
-  { href: "/catalog", label: "Catalog" },
-  { href: "/providers", label: "Providers" },
+  // Temporarily hidden — these routes show mock data until the registry is live.
+  // { href: "/catalog", label: "Catalog" },
+  // { href: "/providers", label: "Providers" },
   { href: "/demo", label: "Live Demo" },
   { href: "/docs", label: "Docs" },
 ];
