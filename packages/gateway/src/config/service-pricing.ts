@@ -28,23 +28,23 @@ export const servicePricingConfig: ReadonlyArray<ServicePricingEntry> = [
     serviceId: "depin-weather",
     displayName: "DePIN Weather Data",
     description:
-      "Real-time weather and atmospheric data from decentralized sensor networks. Temperature, humidity, pressure, and wind for any global location.",
+      "Real-time weather data from decentralized sensor networks. Temperature, humidity, pressure, wind, and precipitation for any global city. Powered by Open-Meteo.",
     pricePerRequestAtomic: 1000, // 0.001 USDC
     category: "depin",
   },
   {
     serviceId: "helius-token-balances",
-    displayName: "Helius Token Balances",
+    displayName: "Solana Token Balances",
     description:
-      "All SPL token balances for any Solana wallet address via Helius enhanced APIs.",
+      "All SPL token balances for any Solana wallet address. Returns mint, amount, decimals, and account state via on-chain RPC.",
     pricePerRequestAtomic: 2000, // 0.002 USDC
     category: "blockchain-data",
   },
   {
     serviceId: "birdeye-token-price",
-    displayName: "Birdeye Token Price",
+    displayName: "Token Price (DEX Aggregated)",
     description:
-      "Real-time token price aggregated across all Solana DEXes via Birdeye.",
+      "Real-time token price aggregated across all Solana DEXes via Jupiter. Includes buy/sell spread, confidence level, and market depth.",
     pricePerRequestAtomic: 1000, // 0.001 USDC
     category: "market-data",
   },
