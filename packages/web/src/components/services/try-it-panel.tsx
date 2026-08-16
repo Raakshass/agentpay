@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Play, Loader2 } from "lucide-react";
 import { config } from "@/lib/config";
 import { Button } from "@/components/ui/button";
+import { useMotionAllowed } from "@/hooks/use-reduced-motion";
 import type { CatalogService } from "@/hooks/use-catalog";
 
 interface TryItPanelProps {
@@ -24,6 +26,7 @@ type Result =
 export function TryItPanel({ service }: TryItPanelProps) {
   const [input, setInput] = useState(service.preview.example);
   const [result, setResult] = useState<Result>({ kind: "idle" });
+  const motionOk = useMotionAllowed();
 
   const trimmed = input.trim();
   const requestUrl = `${config.gatewayUrl}${service.preview.endpoint}/${
@@ -90,25 +93,43 @@ export function TryItPanel({ service }: TryItPanelProps) {
         <span className="ml-2 text-accent">free preview</span>
       </p>
 
-      {result.kind === "err" && (
-        <p className="text-sm text-red-400">{result.message}</p>
-      )}
-
-      {result.kind === "ok" && (
-        <div className="space-y-1">
-          <span
-            className={[
-              "inline-block text-xs font-mono",
-              result.status < 300 ? "text-emerald-400" : "text-amber-400",
-            ].join(" ")}
+      <AnimatePresence mode="wait">
+        {result.kind === "err" && (
+          <motion.p
+            key="err"
+            initial={motionOk ? { opacity: 0, y: 6 } : false}
+            animate={{ opacity: 1, y: 0 }}
+            exit={motionOk ? { opacity: 0 } : undefined}
+            transition={{ duration: 0.2 }}
+            className="text-sm text-red-400"
           >
-            {result.status} {result.status < 300 ? "OK" : "response"}
-          </span>
-          <pre className="max-h-72 overflow-auto rounded-lg bg-bg border border-border p-3 text-xs font-mono text-text-muted leading-relaxed">
-            {result.body}
-          </pre>
-        </div>
-      )}
+            {result.message}
+          </motion.p>
+        )}
+
+        {result.kind === "ok" && (
+          <motion.div
+            key="ok"
+            initial={motionOk ? { opacity: 0, y: 6 } : false}
+            animate={{ opacity: 1, y: 0 }}
+            exit={motionOk ? { opacity: 0 } : undefined}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            className="space-y-1"
+          >
+            <span
+              className={[
+                "inline-block text-xs font-mono",
+                result.status < 300 ? "text-emerald-400" : "text-amber-400",
+              ].join(" ")}
+            >
+              {result.status} {result.status < 300 ? "OK" : "response"}
+            </span>
+            <pre className="max-h-72 overflow-auto rounded-lg bg-bg border border-border p-3 text-xs font-mono text-text-muted leading-relaxed">
+              {result.body}
+            </pre>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

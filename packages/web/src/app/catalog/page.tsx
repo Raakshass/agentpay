@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PillLabel } from "@/components/ui/pill-label";
+import { FadeInView } from "@/components/ui/fade-in-view";
 import { ServicesClient } from "@/components/services/services-client";
 
 export const metadata: Metadata = {
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
 export default function CatalogPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-      <header className="max-w-2xl">
+      <FadeInView as="section" className="max-w-2xl" margin="0px">
         <PillLabel icon="✦" label="CATALOG" />
         <h1 className="mt-6 text-4xl md:text-5xl font-semibold tracking-tight leading-[1.1]">
           Live <span className="heading-serif">service catalog</span>
@@ -21,7 +22,7 @@ export default function CatalogPage() {
           Pay per call in USDC, no subscriptions. Try any service free below
           before you open a session.
         </p>
-      </header>
+      </FadeInView>
 
       <div className="mt-12">
         <ServicesClient />
