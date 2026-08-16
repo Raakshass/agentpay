@@ -22,6 +22,13 @@ export function registerCatalogRoutes(application: Express): void {
         model: "state-channel",
       },
       endpoint: `/api/${service.serviceId}`,
+      // Free, unauthenticated sample endpoint + input hints for the web playground.
+      preview: {
+        endpoint: `/preview/${service.serviceId}`,
+        param: service.preview.param,
+        inputLabel: service.preview.inputLabel,
+        example: service.preview.example,
+      },
     }));
 
     response.json({

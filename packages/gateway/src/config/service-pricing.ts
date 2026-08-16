@@ -21,6 +21,20 @@ export interface ServicePricingEntry {
 
   /** Category for catalog filtering */
   category: "depin" | "blockchain-data" | "market-data";
+
+  /**
+   * Metadata for the free, unauthenticated preview endpoint
+   * (`GET /preview/:serviceId/:param`). Lets the web playground call the
+   * service with real upstream data before a payment session exists.
+   */
+  preview: {
+    /** Path param name the endpoint expects, e.g. "city". */
+    param: string;
+    /** Human label for the input, e.g. "City name". */
+    inputLabel: string;
+    /** Example value pre-filled in the playground. */
+    example: string;
+  };
 }
 
 export const servicePricingConfig: ReadonlyArray<ServicePricingEntry> = [
@@ -31,6 +45,11 @@ export const servicePricingConfig: ReadonlyArray<ServicePricingEntry> = [
       "Real-time weather data from decentralized sensor networks. Temperature, humidity, pressure, wind, and precipitation for any global city. Powered by Open-Meteo.",
     pricePerRequestAtomic: 1000, // 0.001 USDC
     category: "depin",
+    preview: {
+      param: "city",
+      inputLabel: "City name",
+      example: "London",
+    },
   },
   {
     serviceId: "helius-token-balances",
@@ -39,6 +58,11 @@ export const servicePricingConfig: ReadonlyArray<ServicePricingEntry> = [
       "All SPL token balances for any Solana wallet address. Returns mint, amount, decimals, and account state via on-chain RPC.",
     pricePerRequestAtomic: 2000, // 0.002 USDC
     category: "blockchain-data",
+    preview: {
+      param: "walletAddress",
+      inputLabel: "Solana wallet address",
+      example: "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM",
+    },
   },
   {
     serviceId: "birdeye-token-price",
@@ -47,6 +71,11 @@ export const servicePricingConfig: ReadonlyArray<ServicePricingEntry> = [
       "Real-time token price aggregated across all Solana DEXes via Jupiter. Includes buy/sell spread, confidence level, and market depth.",
     pricePerRequestAtomic: 1000, // 0.001 USDC
     category: "market-data",
+    preview: {
+      param: "tokenAddress",
+      inputLabel: "Token mint address",
+      example: "So11111111111111111111111111111111111111112",
+    },
   },
 ] as const;
 

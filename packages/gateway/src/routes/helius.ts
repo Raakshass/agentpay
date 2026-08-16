@@ -81,6 +81,13 @@ export function registerHeliusRoutes(application: Express): void {
     sessionGate,
     handleTokenBalancesRequest
   );
+
+  // Free, unauthenticated preview — same real data, no payment session.
+  // Powers the web "Try it" playground so agents can sample before they pay.
+  application.get(
+    "/preview/helius-token-balances/:walletAddress",
+    handleTokenBalancesRequest
+  );
 }
 
 // ---------------------------------------------------------------------------

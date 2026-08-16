@@ -111,6 +111,10 @@ export function registerDepinWeatherRoutes(application: Express): void {
   });
 
   application.get("/api/depin-weather/:city", sessionGate, handleWeatherRequest);
+
+  // Free, unauthenticated preview — same real data, no payment session.
+  // Powers the web "Try it" playground so agents can sample before they pay.
+  application.get("/preview/depin-weather/:city", handleWeatherRequest);
 }
 
 // ---------------------------------------------------------------------------
