@@ -1,9 +1,14 @@
 "use client";
 
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ChevronDown } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { formatUsdcWithSymbol } from "@/lib/format";
 import { categoryMeta } from "@/lib/service-categories";
+import { useMotionAllowed } from "@/hooks/use-reduced-motion";
 import type { CatalogService } from "@/hooks/use-catalog";
+import { TryItPanel } from "./try-it-panel";
 
 interface ServiceCardProps {
   service: CatalogService;
@@ -11,11 +16,13 @@ interface ServiceCardProps {
 
 /**
  * A single live service from the gateway catalog: name, category, description,
- * and real per-call price. The "Try it" playground is layered on in a later
- * step via the children slot.
+ * and real per-call price, with an expandable "Try it" playground that calls
+ * the free preview endpoint.
  */
 export function ServiceCard({ service }: ServiceCardProps) {
   const cat = categoryMeta(service.category);
+  const [open, setOpen] = useState(false);
+  const motionOk = useMotionAllowed();
 
   return (
     <Card hoverable={false} className="h-full">
@@ -53,6 +60,37 @@ export function ServiceCard({ service }: ServiceCardProps) {
             {service.endpoint}
           </code>
         </div>
+
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+          className="flex items-center justify-between rounded-lg border border-border bg-bg px-3 py-2 text-sm font-medium text-text-primary hover:border-border-hover transition-colors duration-200"
+        >
+          <span>{open ? "Hide playground" : "Try it — free preview"}</span>
+          <ChevronDown
+            className={[
+              "w-4 h-4 text-text-dim transition-transform duration-200",
+              open ? "rotate-180" : "",
+            ].join(" ")}
+          />
+        </button>
+
+        <AnimatePresence initial={false}>
+          {open && (
+            <motion.div
+              initial={motionOk ? { height: 0, opacity: 0 } : false}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={motionOk ? { height: 0, opacity: 0 } : undefined}
+              transition={{ duration: 0.2 }}
+              className="overflow-hidden"
+            >
+              <div className="pt-1">
+                <TryItPanel service={service} />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </Card>
   );
