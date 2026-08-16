@@ -41,9 +41,9 @@ export function DifferentiationSection() {
         <FadeInView stagger className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
           {differentiators.map((item) => (
             <motion.div key={item.title} variants={fadeInUp}>
-              <div className="text-center p-8">
-                <div className="w-14 h-14 rounded-2xl bg-accent-glow border border-border flex items-center justify-center mx-auto mb-6">
-                  <item.icon className="w-6 h-6 text-accent" />
+              <div className="group text-center p-8">
+                <div className="w-14 h-14 rounded-2xl bg-accent-glow border border-border flex items-center justify-center mx-auto mb-6 transition-all duration-300 ease-out group-hover:scale-110 group-hover:border-accent/40 group-hover:shadow-[0_0_24px_-6px_rgba(166,107,255,0.35)]">
+                  <item.icon className="w-6 h-6 text-accent transition-transform duration-300 ease-out group-hover:-rotate-6" />
                 </div>
                 <h3 className="text-lg font-semibold text-text-primary mb-3">
                   {item.title}

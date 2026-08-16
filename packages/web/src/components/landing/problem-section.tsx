@@ -41,9 +41,14 @@ export function ProblemSection() {
 
         <FadeInView stagger className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
           {problems.map((problem) => (
-            <motion.div key={problem.title} variants={fadeInUp}>
-              <Card hoverable={false} className="p-8 h-full">
-                <div className="w-12 h-12 rounded-xl bg-white/5 border border-border flex items-center justify-center mb-6">
+            <motion.div
+              key={problem.title}
+              variants={fadeInUp}
+              whileHover={{ y: -4 }}
+              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <Card hoverable={false} className="group p-8 h-full">
+                <div className="w-12 h-12 rounded-xl bg-white/5 border border-border flex items-center justify-center mb-6 transition-all duration-300 ease-out group-hover:bg-accent/10 group-hover:border-accent/25 group-hover:scale-110 group-hover:-rotate-3">
                   <problem.icon className="w-5 h-5 text-accent" />
                 </div>
                 <h3 className="text-lg font-semibold text-text-primary mb-3">
