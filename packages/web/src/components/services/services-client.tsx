@@ -76,12 +76,16 @@ export function ServicesClient() {
             />
           ))}
         </div>
-        {network && (
-          <span className="inline-flex items-center gap-2 text-xs text-text-dim">
-            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-            Live · {network}
-          </span>
-        )}
+        {/* Reachability only — the gateway answered /catalog. This does NOT
+            assert that on-chain settlement is live; `network` is just the
+            gateway's configured cluster. */}
+        <span className="inline-flex items-center gap-2 text-xs text-text-dim">
+          <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+          Gateway online
+          {network && (
+            <span className="text-text-dim/70">· {network.replace(/^solana-/, "")}</span>
+          )}
+        </span>
       </div>
 
       <motion.div
