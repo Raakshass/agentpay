@@ -2,15 +2,19 @@
 
 import { useMemo, useState } from "react";
 import { AlertTriangle, RefreshCw } from "lucide-react";
+import { motion } from "framer-motion";
 import { useCatalog } from "@/hooks/use-catalog";
 import { CardSkeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { useMotionAllowed } from "@/hooks/use-reduced-motion";
+import { staggerContainer, fadeInUp } from "@/lib/motion";
 import { categoriesFrom, categoryMeta } from "@/lib/service-categories";
 import { ServiceCard } from "./service-card";
 
 export function ServicesClient() {
   const { services, network, loading, error, refresh } = useCatalog();
   const [category, setCategory] = useState<string | "all">("all");
+  const motionOk = useMotionAllowed();
 
   const categories = useMemo(
     () => categoriesFrom(services.map((s) => s.category)),
@@ -80,11 +84,24 @@ export function ServicesClient() {
         )}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <motion.div
+        key={category}
+        variants={staggerContainer}
+        initial={motionOk ? "hidden" : false}
+        animate="visible"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+      >
         {filtered.map((service) => (
-          <ServiceCard key={service.serviceId} service={service} />
+          <motion.div
+            key={service.serviceId}
+            variants={fadeInUp}
+            whileHover={motionOk ? { y: -4 } : undefined}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <ServiceCard service={service} />
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </div>
   );
 }
@@ -103,13 +120,20 @@ function FilterChip({
       type="button"
       onClick={onClick}
       className={[
-        "rounded-full border px-4 py-1.5 text-sm transition-all duration-200",
+        "relative rounded-full border px-4 py-1.5 text-sm transition-colors duration-200",
         active
-          ? "border-accent/50 bg-accent/10 text-accent"
+          ? "border-accent/50 text-accent"
           : "border-border bg-bg-card text-text-muted hover:border-border-hover hover:text-text-primary",
       ].join(" ")}
     >
-      {label}
+      {active && (
+        <motion.span
+          layoutId="catalog-filter-active"
+          className="absolute inset-0 rounded-full bg-accent/10"
+          transition={{ type: "spring", stiffness: 400, damping: 32 }}
+        />
+      )}
+      <span className="relative z-10">{label}</span>
     </button>
   );
 }

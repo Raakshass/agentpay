@@ -26,11 +26,23 @@ export function ServiceCard({ service }: ServiceCardProps) {
 
   return (
     <Card hoverable={false} className="h-full">
-      <div className="p-6 flex flex-col gap-4 h-full">
+      <div className="group p-6 flex flex-col gap-4 h-full">
         <div className="flex items-start justify-between gap-3">
-          <h3 className="text-lg font-semibold tracking-tight text-text-primary leading-snug">
-            {service.displayName}
-          </h3>
+          <div className="flex items-center gap-3 min-w-0">
+            <span
+              className={[
+                "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border",
+                "transition-transform duration-300 ease-out",
+                "group-hover:scale-110 group-hover:-rotate-3",
+                cat.iconClass,
+              ].join(" ")}
+            >
+              <cat.icon className="h-5 w-5" />
+            </span>
+            <h3 className="text-lg font-semibold tracking-tight text-text-primary leading-snug truncate">
+              {service.displayName}
+            </h3>
+          </div>
           <span
             className={[
               "inline-flex items-center shrink-0",
