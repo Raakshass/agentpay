@@ -3,6 +3,7 @@ import "./globals.css";
 import { ClientProviders } from "./client-providers";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
+import { ScrollProgress } from "@/components/layout/scroll-progress";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://conduit.dev";
 const TITLE = "Conduit — The Payment Layer for Autonomous Agents";
@@ -51,6 +52,7 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className="noise-overlay">
         <ClientProviders>
+          <ScrollProgress />
           <Navbar />
           <main className="min-h-screen pt-16">{children}</main>
           <Footer />
