@@ -4,6 +4,7 @@ TypeScript SDK for AI agents to consume paid Web3 / DePIN APIs over [Conduit](..
 
 The SDK handles the hard parts of the payment protocol for you:
 
+- **On-chain deposit & refund** — `openChannel()` locks USDC via the escrow program (deriving the PDA + vault for you); `claimRefund()` reclaims it if the gateway never settles. No hand-built Anchor instructions.
 - **Session lifecycle** — open, use, close.
 - **Automatic IOU signing** — every API call is paid for with a fresh, cryptographically-signed IOU.
 - **Canonical serialization** — produces the exact bytes the gateway and the on-chain escrow contract verify against, so a signature made here always settles on-chain.
@@ -27,16 +28,19 @@ Standalone:
 pnpm add conduit-pay
 ```
 
-The only runtime dependency is [`@noble/ed25519`](https://github.com/paulmillr/noble-ed25519). Requires an environment with `fetch`, `btoa`, and `TextEncoder` (Node ≥ 20 or any modern browser).
+Runtime dependencies: [`@noble/ed25519`](https://github.com/paulmillr/noble-ed25519) for IOU signing, and [`@solana/web3.js`](https://github.com/solana-labs/solana-web3.js) + [`@solana/spl-token`](https://github.com/solana-program/token) for the on-chain deposit/refund helpers. Requires an environment with `fetch`, `btoa`, and `TextEncoder` (Node ≥ 20 or any modern browser).
 
 ---
 
 ## Quick start
 
 ```typescript
-import { ConduitSession, fetchCatalog } from "conduit-pay";
+import { Connection } from "@solana/web3.js";
+import { openChannel, ConduitSession, fetchCatalog } from "conduit-pay";
 
 const GATEWAY = "http://localhost:4020";
+const connection = new Connection("https://api.devnet.solana.com", "confirmed");
+const DEPOSIT = 10_000_000; // 10 USDC (6 decimals)
 
 // 1. Discover what's available (no session needed)
 const catalog = await fetchCatalog(GATEWAY);
@@ -44,26 +48,35 @@ for (const s of catalog.services) {
   console.log(s.serviceId, s.pricing.perRequestAtomic, "atomic USDC/req");
 }
 
-// 2. Open a session.
-//    Prerequisite: you have already deposited USDC on-chain by calling the
-//    escrow program's `open_channel` with this same `channelId`.
-const session = await ConduitSession.open({
-  gatewayUrl: GATEWAY,
-  sessionPda: "<base58 channel PDA>",     // session lookup key
-  channelId: channelIdBytes,              // raw 32-byte Uint8Array OR base58 string
-  agentPrivateKey: agentSecretKey,        // 32-byte ed25519 seed
-  agentPublicKey: "<base58 agent pubkey>",
-  providerPublicKey: "<base58 provider>", // receives settled funds
-  depositAmountAtomic: 10_000_000,        // 10 USDC (6 decimals)
+// 2. Deposit USDC on-chain — the SDK derives the PDA + vault and returns
+//    everything the gateway session needs. `agent` is a web3.js Keypair.
+const channel = await openChannel({
+  connection,
+  agent,
+  provider: providerPubkey,   // PublicKey or base58 string
+  gateway: gatewayPubkey,     // the gateway's wallet pubkey
+  usdcMint,
+  depositAmountAtomic: DEPOSIT,
 });
 
-// 3. Call paid APIs. The IOU is built, signed, and attached for you.
+// 3. Open the gateway session with what openChannel returned.
+const session = await ConduitSession.open({
+  gatewayUrl: GATEWAY,
+  sessionPda: channel.channelPda.toBase58(), // session lookup key
+  channelId: channel.channelId,              // raw 32-byte Uint8Array
+  agentPrivateKey: agent.secretKey.slice(0, 32), // 32-byte ed25519 seed
+  agentPublicKey: agent.publicKey.toBase58(),
+  providerPublicKey: providerPubkey.toBase58(),  // receives settled funds
+  depositAmountAtomic: DEPOSIT,
+});
+
+// 4. Call paid APIs. The IOU is built, signed, and attached for you.
 const london = await session.fetch("/api/depin-weather/london", 1000);
 const tokyo  = await session.fetch("/api/depin-weather/tokyo", 1000);
 
 console.log("Remaining:", session.getRemainingBalance(), "atomic USDC");
 
-// 4. Close — the gateway settles the final IOU on-chain.
+// 5. Close — the gateway settles the final IOU on-chain.
 const result = await session.close();
 console.log(result.usage);       // requests made, USDC used, refund amount
 console.log(result.settlement);  // { isSuccess, transactionSignature, reason? }
@@ -72,6 +85,63 @@ console.log(result.settlement);  // { isSuccess, transactionSignature, reason? }
 ---
 
 ## API reference
+
+### On-chain helpers
+
+The escrow side of the channel. `openChannel` is the deposit you make **before**
+opening a gateway session; `claimRefund` is your crash-safety exit.
+
+#### `openChannel(params): Promise<OpenChannelResult>`
+
+Locks USDC into a channel vault via the escrow program's `open_channel`,
+deriving the channel PDA and vault for you and generating a fresh `channelId`.
+
+```typescript
+interface OpenChannelParams {
+  connection: Connection;          // @solana/web3.js
+  agent: Keypair;                  // signs the deposit, pays rent
+  provider: PublicKey | string;    // settlement recipient
+  gateway: PublicKey | string;     // gateway wallet authorized to settle
+  usdcMint: PublicKey | string;
+  depositAmountAtomic: number | bigint; // 1 USDC = 1_000_000
+  timeoutSeconds?: number;         // default 3600 (bounds 1 .. 604800)
+  channelId?: Uint8Array;          // reuse a specific id; generated otherwise
+  programId?: PublicKey | string;  // defaults to DEFAULT_ESCROW_PROGRAM_ID
+}
+
+interface OpenChannelResult {
+  signature: string;               // confirmed tx signature
+  channelId: Uint8Array;           // pass to ConduitSession.open
+  channelIdBase58: string;
+  channelPda: PublicKey;           // use as `sessionPda`
+  vault: PublicKey;
+}
+```
+
+#### `claimRefund(params): Promise<{ signature: string }>`
+
+Reclaims the full deposit once the channel timeout has elapsed with no
+settlement. Fails on-chain with `TimeoutNotReached` if called early, or
+`AlreadySettled` if the gateway already settled.
+
+```typescript
+await claimRefund({ connection, agent, usdcMint, channelId });
+```
+
+#### `deriveChannelPda(agent, channelId, programId?) → { pda, bump }`
+
+Derives the `["channel", agent, channel_id]` PDA. Pure, no network call.
+
+#### `generateChannelId(): Uint8Array`
+
+Returns a fresh, unique 32-byte channel id. (`openChannel` calls this for you
+unless you pass your own.)
+
+#### `DEFAULT_ESCROW_PROGRAM_ID: PublicKey`
+
+The deployed devnet escrow program id. Override via each helper's `programId`.
+
+---
 
 ### `ConduitSession`
 
@@ -132,7 +202,7 @@ interface CloseSessionResponse {
 }
 ```
 
-If the agent made **zero** calls, there's nothing to settle on-chain — reclaim the full deposit with the contract's `claim_refund` after the timeout.
+If the agent made **zero** calls, there's nothing to settle on-chain — reclaim the full deposit with [`claimRefund()`](#claimrefundparams--promise-signature-string-) after the timeout.
 
 #### `session.getState(): Readonly<SessionState>`
 
