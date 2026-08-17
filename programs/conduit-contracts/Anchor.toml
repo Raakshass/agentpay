@@ -1,4 +1,7 @@
 [toolchain]
+# Pin to match the anchor-lang dependency in the programs' Cargo.toml so local
+# and CI `anchor build` use the same CLI (avoids "anchor-cli X is not installed").
+anchor_version = "1.0.2"
 
 [features]
 resolution = true

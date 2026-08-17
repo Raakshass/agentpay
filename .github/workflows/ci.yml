@@ -65,8 +65,10 @@ jobs:
       - name: Install Anchor CLI
         run: |
           cargo install --git https://github.com/coral-xyz/anchor avm --locked --force
-          avm install latest
-          avm use latest
+          # Must match the anchor-lang pin in the programs' Cargo.toml (1.0.2),
+          # because anchor resolves the required CLI version from that dep.
+          avm install 1.0.2
+          avm use 1.0.2
 
       - name: Build contracts
         working-directory: programs/conduit-contracts
