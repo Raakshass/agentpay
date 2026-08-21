@@ -15,5 +15,14 @@
     "test": "pnpm --filter './packages/**' run test",
     "typecheck": "pnpm --filter './packages/**' run typecheck",
     "clean": "pnpm --filter './packages/**' run clean"
+  },
+  "pnpm": {
+    "neverBuiltDependencies": [
+      "usb",
+      "tiny-secp256k1",
+      "bigint-buffer",
+      "blake-hash",
+      "secp256k1"
+    ]
   }
 }
