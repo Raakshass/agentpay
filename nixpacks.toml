@@ -1,0 +1,15 @@
+# Railway/Nixpacks build config for the Conduit gateway only.
+#
+# The default install runs `pnpm i` across ALL workspace projects, which pulls
+# heavy native deps (usb, sharp, @stellar/stellar-sdk) from the web/agents
+# packages. Those need Python + node-gyp and fail on the build image. The
+# gateway needs none of them, so we install and build ONLY @conduit/gateway.
+
+[phases.install]
+cmds = [
+  "corepack enable",
+  "pnpm install --frozen-lockfile --filter @conduit/gateway --prod=false"
+]
+
+[phases.build]
+cmds = ["pnpm --filter @conduit/gateway build"]
