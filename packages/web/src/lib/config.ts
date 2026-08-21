@@ -5,12 +5,25 @@
  * Switch between devnet and mainnet via NEXT_PUBLIC_SOLANA_NETWORK.
  */
 
+const DEFAULT_RPC_URL = "https://api.devnet.solana.com";
+
+/**
+ * Solana's `Connection` throws if the endpoint doesn't start with http(s).
+ * A misconfigured `NEXT_PUBLIC_RPC_URL` (empty, or missing the protocol) would
+ * otherwise crash the production build during prerendering, so fall back to the
+ * public devnet endpoint when the value isn't a usable http(s) URL.
+ */
+function resolveRpcUrl(): string {
+  const raw = process.env.NEXT_PUBLIC_RPC_URL?.trim();
+  if (raw && /^https?:\/\//i.test(raw)) return raw;
+  return DEFAULT_RPC_URL;
+}
+
 export const config = {
   network: (process.env.NEXT_PUBLIC_SOLANA_NETWORK || "devnet") as
     | "devnet"
     | "mainnet-beta",
-  rpcUrl:
-    process.env.NEXT_PUBLIC_RPC_URL || "https://api.devnet.solana.com",
+  rpcUrl: resolveRpcUrl(),
   registryProgramId:
     process.env.NEXT_PUBLIC_REGISTRY_PROGRAM_ID ||
     "XGXadfKb7mru5wcr1yUZWSeBLVUY6NFDAriBUUMiLbk",
