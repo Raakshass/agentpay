@@ -30,6 +30,7 @@ import {
 import { createHash } from "crypto";
 
 import type { ActiveSession } from "./session-manager.js";
+import { signatureFromBase64 } from "./session-manager.js";
 import { decodeBase58PublicKey } from "./iou-verifier.js";
 import { environmentConfig } from "../config/environment.js";
 import { logger } from "../utilities/logger.js";
@@ -169,12 +170,21 @@ export async function settleSessionOnChain(
   session: ActiveSession
 ): Promise<SettlementResult> {
   // --- Guard: no usage → no settlement needed ---
-  if (session.latestIou === null || session.latestIouSignature === null) {
+  if (session.latestIou === null || session.latestIouSignatureBase64 === null) {
     logger.info(`Session ${session.sessionPda}: No API calls made, skipping settlement`);
     return {
       isSuccess: true,
       transactionSignature: null,
       reason: "No usage to settle — full refund via contract timeout",
+    };
+  }
+
+  const latestIouSignature = signatureFromBase64(session.latestIouSignatureBase64);
+  if (latestIouSignature === null) {
+    return {
+      isSuccess: false,
+      transactionSignature: null,
+      reason: "Failed to decode IOU signature from storage",
     };
   }
 
@@ -217,7 +227,7 @@ export async function settleSessionOnChain(
     // --- Build instruction ---
     const instructionData = buildSettleInstructionData(
       session.latestIou.cumulativeUsdc,
-      session.latestIouSignature
+      latestIouSignature
     );
 
     const settleInstruction = new TransactionInstruction({

@@ -28,6 +28,15 @@ import type {
   OpenSessionResponse,
   CloseSessionResponse,
 } from "./types/session.js";
+import {
+  SessionError,
+  InsufficientBalanceError,
+  GatewayError,
+  RateLimitError,
+  SettlementError,
+  parseGatewayError,
+} from "./errors.js";
+import { withRetry, isRetryableError } from "./retry.js";
 
 /** Encodes bytes to Base64 for HTTP header transport */
 function bytesToBase64(bytes: Uint8Array): string {
@@ -85,21 +94,44 @@ export interface OpenSessionParams {
   providerPublicKey: string;
   /** USDC deposited in atomic units */
   depositAmountAtomic: number;
+  /** Enable automatic retry on transient failures (default: true) */
+  enableRetry?: boolean;
+  /** Maximum retry attempts per API call (default: 3) */
+  maxRetries?: number;
+}
+
+/** Summary of session usage for logging and reporting. */
+export interface UsageSummary {
+  sessionPda: string;
+  totalRequestsMade: number;
+  totalUsdcUsedAtomic: number;
+  totalUsdcUsed: string;
+  depositAmountAtomic: number;
+  remainingBalanceAtomic: number;
+  remainingBalance: string;
+  utilizationPercent: number;
+  isActive: boolean;
 }
 
 export class ConduitSession {
   private readonly gatewayUrl: string;
   private readonly agentPrivateKey: Uint8Array;
+  private readonly enableRetry: boolean;
+  private readonly maxRetries: number;
   private state: SessionState;
 
   private constructor(
     gatewayUrl: string,
     agentPrivateKey: Uint8Array,
-    state: SessionState
+    state: SessionState,
+    enableRetry: boolean,
+    maxRetries: number
   ) {
     this.gatewayUrl = gatewayUrl;
     this.agentPrivateKey = agentPrivateKey;
     this.state = state;
+    this.enableRetry = enableRetry;
+    this.maxRetries = maxRetries;
   }
 
   /**
@@ -127,10 +159,8 @@ export class ConduitSession {
     });
 
     if (!response.ok) {
-      const errorBody = (await response.json()) as { error?: { message?: string } };
-      throw new Error(
-        `Failed to open session: ${errorBody.error?.message ?? response.statusText}`
-      );
+      const errorBody = (await response.json()) as { error?: { message?: string; code?: string } };
+      throw parseGatewayError(response.status, errorBody);
     }
 
     const sessionResponse = (await response.json()) as OpenSessionResponse;
@@ -146,7 +176,13 @@ export class ConduitSession {
       isActive: true,
     };
 
-    return new ConduitSession(params.gatewayUrl, params.agentPrivateKey, state);
+    return new ConduitSession(
+      params.gatewayUrl,
+      params.agentPrivateKey,
+      state,
+      params.enableRetry ?? true,
+      params.maxRetries ?? 3
+    );
   }
 
   /**
@@ -154,6 +190,7 @@ export class ConduitSession {
    *
    * Automatically signs a new IOU (over channelId, not PDA) with the
    * updated cumulative amount and attaches it via headers.
+   * Retries automatically on transient failures if enableRetry is true.
    *
    * @param endpoint - API path (e.g., "/api/depin-weather/london")
    * @param servicePriceAtomic - Price per request in atomic USDC (from catalog)
@@ -161,58 +198,80 @@ export class ConduitSession {
    */
   async fetch(endpoint: string, servicePriceAtomic: number): Promise<unknown> {
     if (!this.state.isActive) {
-      throw new Error("Session is closed. Open a new session to make requests.");
+      throw new SessionError("Session is closed. Open a new session to make requests.", "SESSION_CLOSED");
     }
 
     const remainingBalance =
       this.state.depositAmountAtomic - this.state.currentUsageAtomic;
 
     if (servicePriceAtomic > remainingBalance) {
-      throw new Error(
-        `Insufficient session balance. Remaining: ${remainingBalance}, Required: ${servicePriceAtomic}`
-      );
+      throw new InsufficientBalanceError(remainingBalance, servicePriceAtomic);
     }
 
-    // Build the next IOU — channelId goes into IOU.session for signing
-    const iou = buildNextIou(
-      this.state.channelId,
-      this.state.currentUsageAtomic,
-      this.state.requestCount,
-      servicePriceAtomic
-    );
-
-    // Sign the IOU with the agent's private key
-    const signature = await signIou(iou, this.agentPrivateKey);
-
-    // Serialize the IOU to JSON for the header
-    const iouJson = JSON.stringify({
-      session: iou.session,
-      cumulative_usdc: iou.cumulativeUsdc,
-      request_count: iou.requestCount,
-      timestamp: iou.timestamp,
-    });
-
-    // Make the request with state channel headers
-    const response = await fetch(`${this.gatewayUrl}${endpoint}`, {
-      headers: {
-        "X-SESSION": this.state.sessionPda,
-        "X-IOU": iouJson,
-        "X-SIGNATURE": bytesToBase64(signature),
-      },
-    });
-
-    if (!response.ok) {
-      const errorBody = (await response.json()) as { error?: { message?: string } };
-      throw new Error(
-        `API request failed: ${errorBody.error?.message ?? response.statusText}`
+    const doFetch = async (): Promise<unknown> => {
+      // Build the next IOU — channelId goes into IOU.session for signing
+      const iou = buildNextIou(
+        this.state.channelId,
+        this.state.currentUsageAtomic,
+        this.state.requestCount,
+        servicePriceAtomic
       );
+
+      // Sign the IOU with the agent's private key
+      const signature = await signIou(iou, this.agentPrivateKey);
+
+      // Serialize the IOU to JSON for the header
+      const iouJson = JSON.stringify({
+        session: iou.session,
+        cumulative_usdc: iou.cumulativeUsdc,
+        request_count: iou.requestCount,
+        timestamp: iou.timestamp,
+      });
+
+      // Make the request with state channel headers
+      const response = await fetch(`${this.gatewayUrl}${endpoint}`, {
+        headers: {
+          "X-SESSION": this.state.sessionPda,
+          "X-IOU": iouJson,
+          "X-SIGNATURE": bytesToBase64(signature),
+        },
+      });
+
+      if (!response.ok) {
+        const errorBody = (await response.json()) as {
+          error?: { message?: string; code?: string; retryAfterMs?: number };
+        };
+
+        // Rate limit — throw specific error so retry can use retryAfterMs
+        if (response.status === 429) {
+          throw new RateLimitError(errorBody.error?.retryAfterMs ?? 60_000);
+        }
+
+        throw parseGatewayError(response.status, errorBody);
+      }
+
+      // Update local session state (only on success)
+      this.state.currentUsageAtomic = iou.cumulativeUsdc;
+      this.state.requestCount = iou.requestCount;
+
+      return response.json();
+    };
+
+    // Wrap with retry if enabled
+    if (this.enableRetry) {
+      return withRetry(doFetch, {
+        maxRetries: this.maxRetries,
+        shouldRetry: (error) => isRetryableError(error),
+        onRetry: (error, attempt, delayMs) => {
+          const msg = error instanceof Error ? error.message : String(error);
+          console.warn(
+            `[conduit-sdk] Retry #${attempt} for ${endpoint} in ${delayMs}ms: ${msg}`
+          );
+        },
+      });
     }
 
-    // Update local session state
-    this.state.currentUsageAtomic = iou.cumulativeUsdc;
-    this.state.requestCount = iou.requestCount;
-
-    return response.json();
+    return doFetch();
   }
 
   /**
@@ -221,7 +280,7 @@ export class ConduitSession {
    */
   async close(): Promise<CloseSessionResponse> {
     if (!this.state.isActive) {
-      throw new Error("Session is already closed");
+      throw new SessionError("Session is already closed", "SESSION_CLOSED");
     }
 
     const response = await fetch(`${this.gatewayUrl}/session/close`, {
@@ -231,10 +290,8 @@ export class ConduitSession {
     });
 
     if (!response.ok) {
-      const errorBody = (await response.json()) as { error?: { message?: string } };
-      throw new Error(
-        `Failed to close session: ${errorBody.error?.message ?? response.statusText}`
-      );
+      const errorBody = (await response.json()) as { error?: { message?: string; code?: string } };
+      throw parseGatewayError(response.status, errorBody);
     }
 
     this.state.isActive = false;
@@ -249,5 +306,29 @@ export class ConduitSession {
   /** Get remaining balance in atomic USDC */
   getRemainingBalance(): number {
     return this.state.depositAmountAtomic - this.state.currentUsageAtomic;
+  }
+
+  /**
+   * Get a human-readable summary of session usage.
+   * Useful for logging, dashboards, and agent reporting.
+   */
+  getUsageSummary(): UsageSummary {
+    const remainingAtomic = this.state.depositAmountAtomic - this.state.currentUsageAtomic;
+    const utilization =
+      this.state.depositAmountAtomic > 0
+        ? (this.state.currentUsageAtomic / this.state.depositAmountAtomic) * 100
+        : 0;
+
+    return {
+      sessionPda: this.state.sessionPda,
+      totalRequestsMade: this.state.requestCount,
+      totalUsdcUsedAtomic: this.state.currentUsageAtomic,
+      totalUsdcUsed: `${(this.state.currentUsageAtomic / 1_000_000).toFixed(6)} USDC`,
+      depositAmountAtomic: this.state.depositAmountAtomic,
+      remainingBalanceAtomic: remainingAtomic,
+      remainingBalance: `${(remainingAtomic / 1_000_000).toFixed(6)} USDC`,
+      utilizationPercent: Math.round(utilization * 100) / 100,
+      isActive: this.state.isActive,
+    };
   }
 }

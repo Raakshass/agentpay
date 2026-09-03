@@ -10,20 +10,27 @@ import cors from "cors";
 
 import { requestLoggingMiddleware } from "./middleware/request-logging.js";
 import { errorHandlingMiddleware } from "./middleware/error-handling.js";
+import { publicRateLimiter } from "./middleware/rate-limiter.js";
 import { registerHealthRoutes } from "./routes/health.js";
 import { registerCatalogRoutes } from "./routes/catalog.js";
 import { registerSessionRoutes } from "./routes/session.js";
 import { registerDepinWeatherRoutes } from "./routes/depin-weather.js";
 import { registerHeliusRoutes } from "./routes/helius.js";
 import { registerBirdeyeRoutes } from "./routes/birdeye.js";
+import { registerJupiterRoutes } from "./routes/jupiter.js";
+import { registerSolanaStatsRoutes } from "./routes/solana-stats.js";
+import { registerNftMetadataRoutes } from "./routes/nft-metadata.js";
+import { registerTokenHoldersRoutes } from "./routes/token-holders.js";
+import { registerTxHistoryRoutes } from "./routes/tx-history.js";
 
 export async function createGatewayApplication(): Promise<Express> {
   const application = express();
 
   // --- Global Middleware ---
   application.use(cors());
-  application.use(express.json());
+  application.use(express.json({ limit: "1mb" }));
   application.use(requestLoggingMiddleware);
+  application.use(publicRateLimiter(60, 60_000)); // 60 req/min per IP
 
   // --- Public Routes (no session required) ---
   registerHealthRoutes(application);
@@ -34,6 +41,11 @@ export async function createGatewayApplication(): Promise<Express> {
   registerDepinWeatherRoutes(application);
   registerHeliusRoutes(application);
   registerBirdeyeRoutes(application);
+  registerJupiterRoutes(application);
+  registerSolanaStatsRoutes(application);
+  registerNftMetadataRoutes(application);
+  registerTokenHoldersRoutes(application);
+  registerTxHistoryRoutes(application);
 
   // --- Error Handler (must be registered last) ---
   application.use(errorHandlingMiddleware);

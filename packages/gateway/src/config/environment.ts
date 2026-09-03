@@ -38,6 +38,10 @@ const environmentSchema = z.object({
     escrowProgramId: z.string().optional(),
     registryProgramId: z.string().optional(),
   }),
+
+  redis: z.object({
+    url: z.string().url().optional(),
+  }),
 });
 
 type EnvironmentConfig = z.infer<typeof environmentSchema>;
@@ -67,6 +71,9 @@ function loadEnvironmentConfig(): EnvironmentConfig {
     contracts: {
       escrowProgramId: process.env["ESCROW_PROGRAM_ID"],
       registryProgramId: process.env["REGISTRY_PROGRAM_ID"],
+    },
+    redis: {
+      url: process.env["REDIS_URL"],
     },
   });
 

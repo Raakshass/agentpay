@@ -1,21 +1,22 @@
 /**
  * Session Manager
  *
- * Tracks active payment sessions in memory. Each session represents
- * a state channel between an agent and the gateway:
+ * Tracks active payment sessions using a Redis-backed store (production)
+ * or in-memory store (local dev). Each session represents a state channel
+ * between an agent and the gateway:
  *
  * - Agent deposits USDC on-chain (open_session on escrow contract)
  * - Agent provides the session PDA address to the gateway
  * - Gateway tracks cumulative usage via signed IOUs
  * - When session ends, gateway settles on-chain
  *
- * In-memory storage is acceptable for MVP because:
- * - Sessions are short-lived (1 hour timeout)
- * - If gateway restarts, agents can claim timeout refund on-chain
- * - Production version will use Redis for persistence
+ * Sessions are persisted with a TTL so they auto-expire after the timeout.
+ * If the gateway restarts, active sessions are recovered from Redis.
+ * If no Redis is configured, falls back to in-memory (dev mode only).
  */
 
 import { logger } from "../utilities/logger.js";
+import { getSessionStore, type SessionStore } from "./redis-client.js";
 
 export interface SignedIou {
   /**
@@ -62,30 +63,40 @@ export interface ActiveSession {
   /** The latest signed IOU from the agent (highest cumulative amount) */
   latestIou: SignedIou | null;
 
-  /** Raw signature bytes of the latest IOU (for on-chain settlement) */
-  latestIouSignature: Uint8Array | null;
+  /** Raw signature bytes of the latest IOU (for on-chain settlement), base64-encoded for storage */
+  latestIouSignatureBase64: string | null;
 
   /** When the session was registered with the gateway */
   registeredAt: number;
 }
 
-/** In-memory session store. Key = session PDA address. */
-const activeSessions = new Map<string, ActiveSession>();
+/** Default session TTL: 1 hour */
+const SESSION_TTL_SECONDS = parseInt(process.env["SESSION_TIMEOUT_SECONDS"] ?? "3600", 10);
+
+let _store: SessionStore | null = null;
+
+function getStore(): SessionStore {
+  if (_store === null) {
+    _store = getSessionStore();
+  }
+  return _store;
+}
 
 /**
  * Register a new session after the agent has deposited on-chain.
- * The gateway doesn't verify the on-chain deposit here — that's
- * done when the session is first used (lazy verification).
  */
-export function registerSession(
+export async function registerSession(
   sessionPda: string,
   channelId: string,
   agentPublicKey: string,
   providerPublicKey: string,
   depositAmountAtomic: number,
   usdcMint?: string
-): ActiveSession {
-  if (activeSessions.has(sessionPda)) {
+): Promise<ActiveSession> {
+  const store = getStore();
+
+  const existing = await store.get(sessionPda);
+  if (existing !== null) {
     throw new Error(`Session ${sessionPda} is already registered`);
   }
 
@@ -97,11 +108,11 @@ export function registerSession(
     depositAmountAtomic,
     usdcMint,
     latestIou: null,
-    latestIouSignature: null,
+    latestIouSignatureBase64: null,
     registeredAt: Date.now(),
   };
 
-  activeSessions.set(sessionPda, session);
+  await store.set(sessionPda, JSON.stringify(session), SESSION_TTL_SECONDS);
   logger.info(`Session registered: ${sessionPda} (${depositAmountAtomic} atomic USDC)`);
 
   return session;
@@ -109,10 +120,19 @@ export function registerSession(
 
 /**
  * Get an active session by its PDA address.
- * Returns null if the session doesn't exist or has been closed.
+ * Returns null if the session doesn't exist or has expired.
  */
-export function getSession(sessionPda: string): ActiveSession | null {
-  return activeSessions.get(sessionPda) ?? null;
+export async function getSession(sessionPda: string): Promise<ActiveSession | null> {
+  const store = getStore();
+  const raw = await store.get(sessionPda);
+  if (raw === null) return null;
+
+  try {
+    return JSON.parse(raw) as ActiveSession;
+  } catch {
+    logger.error(`Failed to parse session data for ${sessionPda}`);
+    return null;
+  }
 }
 
 /**
@@ -120,14 +140,15 @@ export function getSession(sessionPda: string): ActiveSession | null {
  * Only accepts IOUs with a higher cumulative amount than the current one
  * (monotonically increasing — prevents replay of older IOUs).
  */
-export function updateSessionIou(
+export async function updateSessionIou(
   sessionPda: string,
   iou: SignedIou,
   signature: Uint8Array
-): void {
-  const session = activeSessions.get(sessionPda);
+): Promise<void> {
+  const store = getStore();
+  const session = await getSession(sessionPda);
 
-  if (session === undefined) {
+  if (session === null) {
     throw new Error(`Session ${sessionPda} not found`);
   }
 
@@ -144,7 +165,10 @@ export function updateSessionIou(
   }
 
   session.latestIou = iou;
-  session.latestIouSignature = signature;
+  session.latestIouSignatureBase64 = Buffer.from(signature).toString("base64");
+
+  // Persist updated session (refresh TTL)
+  await store.set(sessionPda, JSON.stringify(session), SESSION_TTL_SECONDS);
 
   logger.debug(
     `Session ${sessionPda}: IOU updated to ${iou.cumulativeUsdc} atomic USDC (${iou.requestCount} requests)`
@@ -155,14 +179,15 @@ export function updateSessionIou(
  * Remove a session after settlement or refund.
  * Returns the session data for settlement processing.
  */
-export function closeSession(sessionPda: string): ActiveSession | null {
-  const session = activeSessions.get(sessionPda);
+export async function closeSession(sessionPda: string): Promise<ActiveSession | null> {
+  const store = getStore();
+  const session = await getSession(sessionPda);
 
-  if (session === undefined) {
+  if (session === null) {
     return null;
   }
 
-  activeSessions.delete(sessionPda);
+  await store.delete(sessionPda);
   logger.info(`Session closed: ${sessionPda}`);
 
   return session;
@@ -172,6 +197,15 @@ export function closeSession(sessionPda: string): ActiveSession | null {
  * Get the count of currently active sessions.
  * Useful for health checks and monitoring.
  */
-export function getActiveSessionCount(): number {
-  return activeSessions.size;
+export async function getActiveSessionCount(): Promise<number> {
+  const store = getStore();
+  return store.size();
+}
+
+/**
+ * Helper: convert base64 signature back to Uint8Array for settlement.
+ */
+export function signatureFromBase64(base64: string | null): Uint8Array | null {
+  if (base64 === null) return null;
+  return Uint8Array.from(Buffer.from(base64, "base64"));
 }

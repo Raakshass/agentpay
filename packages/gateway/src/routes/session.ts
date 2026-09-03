@@ -11,6 +11,7 @@
 import type { Express } from "express";
 import { registerSession, closeSession, getSession } from "../services/session-manager.js";
 import { settleSessionOnChain } from "../services/settlement.js";
+import { verifyOnChainDeposit } from "../services/deposit-verifier.js";
 import { logger } from "../utilities/logger.js";
 
 export function registerSessionRoutes(application: Express): void {
@@ -18,15 +19,10 @@ export function registerSessionRoutes(application: Express): void {
    * Open a session.
    *
    * Called by the agent AFTER they've deposited USDC on-chain
-   * via Vineet's escrow contract. The agent provides:
-   * - sessionPda: the escrow PDA address from the deposit transaction
-   * - agentPublicKey: agent's wallet public key
-   * - depositAmountAtomic: USDC deposited in atomic units
-   *
-   * TODO: Verify the on-chain deposit before registering.
-   * For MVP, we trust the agent's claim and verify lazily.
+   * via the escrow contract. The gateway verifies the on-chain deposit
+   * before registering the session — agents cannot fake deposits.
    */
-  application.post("/session/open", (request, response) => {
+  application.post("/session/open", async (request, response) => {
     const { sessionPda, channelId, agentPublicKey, providerPublicKey, depositAmountAtomic, usdcMint } = request.body as {
       sessionPda?: string;
       channelId?: string;
@@ -56,15 +52,35 @@ export function registerSessionRoutes(application: Express): void {
       return;
     }
 
+    // Verify the on-chain deposit before registering the session.
+    const verification = await verifyOnChainDeposit(
+      sessionPda,
+      agentPublicKey,
+      providerPublicKey,
+      depositAmountAtomic
+    );
+
+    if (!verification.verified) {
+      logger.warn(`Deposit verification failed for ${sessionPda}: ${verification.reason}`);
+      response.status(403).json({
+        error: {
+          message: `On-chain deposit verification failed: ${verification.reason}`,
+          code: "DEPOSIT_UNVERIFIED",
+        },
+      });
+      return;
+    }
+
     try {
-      const session = registerSession(sessionPda, channelId, agentPublicKey, providerPublicKey, depositAmountAtomic, usdcMint);
+      const session = await registerSession(sessionPda, channelId, agentPublicKey, providerPublicKey, depositAmountAtomic, usdcMint);
 
       response.status(201).json({
         status: "active",
         sessionPda: session.sessionPda,
         depositAmountAtomic: session.depositAmountAtomic,
         registeredAt: session.registeredAt,
-        message: "Session registered. Include X-SESSION, X-IOU, and X-SIGNATURE headers with API requests.",
+        depositVerified: true,
+        message: "Session registered (deposit verified on-chain). Include X-SESSION, X-IOU, and X-SIGNATURE headers with API requests.",
       });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Failed to open session";
@@ -90,7 +106,7 @@ export function registerSessionRoutes(application: Express): void {
       return;
     }
 
-    const session = getSession(sessionPda);
+    const session = await getSession(sessionPda);
 
     if (session === null) {
       response.status(404).json({
@@ -103,7 +119,7 @@ export function registerSessionRoutes(application: Express): void {
     const settlementResult = await settleSessionOnChain(session);
 
     // Remove session from memory regardless of settlement outcome
-    closeSession(sessionPda);
+    await closeSession(sessionPda);
 
     logger.info(
       `Session closed: ${sessionPda}. ` +

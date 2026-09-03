@@ -66,7 +66,7 @@ export function createSessionGateMiddleware(options: SessionGateOptions) {
     }
 
     // --- Look up session ---
-    const session = getSession(sessionPda);
+    const session = await getSession(sessionPda);
 
     if (session === null) {
       response.status(404).json({
@@ -131,7 +131,7 @@ export function createSessionGateMiddleware(options: SessionGateOptions) {
 
     // --- Update session with new IOU ---
     try {
-      updateSessionIou(sessionPda, iou, signatureBytes);
+      await updateSessionIou(sessionPda, iou, signatureBytes);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Failed to update session";
       response.status(400).json({

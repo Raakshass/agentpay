@@ -20,7 +20,7 @@ export interface ServicePricingEntry {
   pricePerRequestAtomic: number;
 
   /** Category for catalog filtering */
-  category: "depin" | "blockchain-data" | "market-data";
+  category: "depin" | "blockchain-data" | "market-data" | "network" | "nft";
 
   /**
    * Metadata for the free, unauthenticated preview endpoint
@@ -75,6 +75,71 @@ export const servicePricingConfig: ReadonlyArray<ServicePricingEntry> = [
       param: "tokenAddress",
       inputLabel: "Token mint address",
       example: "So11111111111111111111111111111111111111112",
+    },
+  },
+  {
+    serviceId: "jupiter-quote",
+    displayName: "Jupiter DEX Swap Quote",
+    description:
+      "Real-time swap quotes from Jupiter DEX aggregator. Optimal routing across every Solana DEX with slippage estimates and route breakdown.",
+    pricePerRequestAtomic: 1000, // 0.001 USDC
+    category: "market-data",
+    preview: {
+      param: "inputMint/outputMint/amount",
+      inputLabel: "Input mint / Output mint / Amount",
+      example: "So11111111111111111111111111111111111111112/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/1000000000",
+    },
+  },
+  {
+    serviceId: "solana-stats",
+    displayName: "Solana Network Stats",
+    description:
+      "Live Solana network performance — current TPS, epoch progress, slot height, and block production metrics directly from the RPC.",
+    pricePerRequestAtomic: 500, // 0.0005 USDC
+    category: "network",
+    preview: {
+      param: "",
+      inputLabel: "No input required",
+      example: "",
+    },
+  },
+  {
+    serviceId: "nft-metadata",
+    displayName: "NFT Metadata (Metaplex)",
+    description:
+      "On-chain metadata for any Solana NFT or compressed NFT. Returns name, image, attributes, creators, royalties, and collection via the Metaplex DAS API.",
+    pricePerRequestAtomic: 1000, // 0.001 USDC
+    category: "nft",
+    preview: {
+      param: "mintAddress",
+      inputLabel: "NFT mint address",
+      example: "3nYMQSJi7xTPJWsD2znMGEEoEp9KQbGarAc6oR2mz6bK",
+    },
+  },
+  {
+    serviceId: "token-holders",
+    displayName: "Top Token Holders",
+    description:
+      "Top 20 largest holders for any SPL token on Solana. Returns token account addresses, balances (atomic and UI), and holder ranking.",
+    pricePerRequestAtomic: 2000, // 0.002 USDC
+    category: "blockchain-data",
+    preview: {
+      param: "mintAddress",
+      inputLabel: "Token mint address",
+      example: "JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN",
+    },
+  },
+  {
+    serviceId: "tx-history",
+    displayName: "Transaction History",
+    description:
+      "Recent transaction history for any Solana wallet. Returns signatures, timestamps, status, and Solana Explorer links for up to 25 transactions.",
+    pricePerRequestAtomic: 1500, // 0.0015 USDC
+    category: "blockchain-data",
+    preview: {
+      param: "walletAddress",
+      inputLabel: "Solana wallet address",
+      example: "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM",
     },
   },
 ] as const;

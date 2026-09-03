@@ -32,12 +32,12 @@ function getGatewayPublicKey(): string {
 }
 
 export function registerHealthRoutes(application: Express): void {
-  application.get("/health", (_request, response) => {
+  application.get("/health", async (_request, response) => {
     response.json({
       status: "healthy",
       service: "conduit-gateway",
       gatewayPublicKey: getGatewayPublicKey(),
-      activeSessions: getActiveSessionCount(),
+      activeSessions: await getActiveSessionCount(),
       timestamp: new Date().toISOString(),
     });
   });

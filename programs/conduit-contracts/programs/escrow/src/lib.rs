@@ -77,7 +77,7 @@ pub mod escrow {
         // Move the deposit from the agent into the vault.
         transfer(
             CpiContext::new(
-                ctx.accounts.token_program.key(),
+                ctx.accounts.token_program.to_account_info(),
                 Transfer {
                     from: ctx.accounts.agent_token_account.to_account_info(),
                     to: ctx.accounts.vault.to_account_info(),
@@ -123,6 +123,11 @@ pub mod escrow {
             .checked_sub(cumulative_amount)
             .ok_or(EscrowError::MathOverflow)?;
 
+        // SECURITY: mark as settled BEFORE any CPI transfers (reentrancy defense).
+        // Even though Solana's runtime prevents true reentrancy, this is defense-in-
+        // depth: the state is consistent before external calls are made.
+        ctx.accounts.channel.settled = true;
+
         // The vault authority is the channel PDA, so it signs CPI transfers.
         let agent_key = channel.agent;
         let channel_id = channel.channel_id;
@@ -134,7 +139,7 @@ pub mod escrow {
         if cumulative_amount > 0 {
             transfer(
                 CpiContext::new_with_signer(
-                    ctx.accounts.token_program.key(),
+                    ctx.accounts.token_program.to_account_info(),
                     Transfer {
                         from: ctx.accounts.vault.to_account_info(),
                         to: ctx.accounts.provider_token_account.to_account_info(),
@@ -150,7 +155,7 @@ pub mod escrow {
         if refund_amount > 0 {
             transfer(
                 CpiContext::new_with_signer(
-                    ctx.accounts.token_program.key(),
+                    ctx.accounts.token_program.to_account_info(),
                     Transfer {
                         from: ctx.accounts.vault.to_account_info(),
                         to: ctx.accounts.agent_token_account.to_account_info(),
@@ -164,7 +169,7 @@ pub mod escrow {
 
         // Empty vault — close it and return its rent to the agent.
         close_account(CpiContext::new_with_signer(
-            ctx.accounts.token_program.key(),
+            ctx.accounts.token_program.to_account_info(),
             CloseAccount {
                 account: ctx.accounts.vault.to_account_info(),
                 destination: ctx.accounts.agent.to_account_info(),
@@ -172,10 +177,6 @@ pub mod escrow {
             },
             signer_seeds,
         ))?;
-
-        // Mark settled before the channel account is closed (defense in depth;
-        // the `close` constraint reclaims the account regardless).
-        ctx.accounts.channel.settled = true;
 
         Ok(())
     }
@@ -203,7 +204,7 @@ pub mod escrow {
         if amount > 0 {
             transfer(
                 CpiContext::new_with_signer(
-                    ctx.accounts.token_program.key(),
+                    ctx.accounts.token_program.to_account_info(),
                     Transfer {
                         from: ctx.accounts.vault.to_account_info(),
                         to: ctx.accounts.agent_token_account.to_account_info(),
@@ -216,7 +217,7 @@ pub mod escrow {
         }
 
         close_account(CpiContext::new_with_signer(
-            ctx.accounts.token_program.key(),
+            ctx.accounts.token_program.to_account_info(),
             CloseAccount {
                 account: ctx.accounts.vault.to_account_info(),
                 destination: ctx.accounts.agent.to_account_info(),
@@ -314,9 +315,14 @@ pub struct Settle<'info> {
     pub agent: SystemAccount<'info>,
 
     /// CHECK: pinned to `channel.provider` by the `has_one = provider` constraint
-    /// above; only used to scope the provider's token account.
+    /// above and the explicit address check below; only used to scope the
+    /// provider's token account.
+    #[account(address = channel.provider @ EscrowError::ProviderMismatch)]
     pub provider: UncheckedAccount<'info>,
 
+    /// SECURITY: constrain usdc_mint to match the vault's mint, preventing a
+    /// fake-mint substitution attack.
+    #[account(constraint = vault.mint == usdc_mint.key() @ EscrowError::MintMismatch)]
     pub usdc_mint: Account<'info, Mint>,
 
     #[account(
@@ -361,6 +367,9 @@ pub struct ClaimRefund<'info> {
     )]
     pub channel: Account<'info, Channel>,
 
+    /// SECURITY: constrain usdc_mint to match the vault's mint, preventing a
+    /// fake-mint substitution attack on the refund path.
+    #[account(constraint = vault.mint == usdc_mint.key() @ EscrowError::MintMismatch)]
     pub usdc_mint: Account<'info, Mint>,
 
     #[account(
@@ -405,4 +414,6 @@ pub enum EscrowError {
     TimeoutNotReached,
     #[msg("Arithmetic overflow")]
     MathOverflow,
+    #[msg("USDC mint does not match the vault")]
+    MintMismatch,
 }
