@@ -11,6 +11,7 @@ import cors from "cors";
 import { requestLoggingMiddleware } from "./middleware/request-logging.js";
 import { errorHandlingMiddleware } from "./middleware/error-handling.js";
 import { publicRateLimiter } from "./middleware/rate-limiter.js";
+import { metricsMiddleware, registerMetricsRoute } from "./routes/metrics.js";
 import { registerHealthRoutes } from "./routes/health.js";
 import { registerCatalogRoutes } from "./routes/catalog.js";
 import { registerSessionRoutes } from "./routes/session.js";
@@ -30,10 +31,12 @@ export async function createGatewayApplication(): Promise<Express> {
   application.use(cors());
   application.use(express.json({ limit: "1mb" }));
   application.use(requestLoggingMiddleware);
+  application.use(metricsMiddleware);
   application.use(publicRateLimiter(60, 60_000)); // 60 req/min per IP
 
-  // --- Public Routes (no session required) ---
+  // --- Operational Routes (no auth required) ---
   registerHealthRoutes(application);
+  registerMetricsRoute(application);
   registerCatalogRoutes(application);
   registerSessionRoutes(application);
 
