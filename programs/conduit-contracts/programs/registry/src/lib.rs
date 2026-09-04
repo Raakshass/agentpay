@@ -7,7 +7,7 @@
 
 use anchor_lang::prelude::*;
 
-declare_id!("XGXadfKb7mru5wcr1yUZWSeBLVUY6NFDAriBUUMiLbk");
+declare_id!("6WMY6ymJkcT6AxcifmE8uzT5ZYQ4okZspFubxXg3TptS");
 
 /// Maximum length (in bytes) of a provider name. Also bounds the PDA seed.
 pub const MAX_NAME_LEN: usize = 50;

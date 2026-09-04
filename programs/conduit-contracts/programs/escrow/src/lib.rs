@@ -31,7 +31,7 @@ use anchor_spl::{
     token::{close_account, transfer, CloseAccount, Mint, Token, TokenAccount, Transfer},
 };
 
-declare_id!("8vH1iEpbwe31WGqSGd9a8qkKh7SCHW8MsaSULVsxskRw");
+declare_id!("B42nssBXyLNK1y9YFZUwtzJcS8dzLYoTwony38YCTDiG");
 
 /// Lower bound for `timeout_seconds`. This is a minimal on-chain sanity floor
 /// (rejects zero/negative). The gateway is expected to additionally refuse to
@@ -77,7 +77,7 @@ pub mod escrow {
         // Move the deposit from the agent into the vault.
         transfer(
             CpiContext::new(
-                ctx.accounts.token_program.to_account_info(),
+                ctx.accounts.token_program.key(),
                 Transfer {
                     from: ctx.accounts.agent_token_account.to_account_info(),
                     to: ctx.accounts.vault.to_account_info(),
@@ -123,15 +123,17 @@ pub mod escrow {
             .checked_sub(cumulative_amount)
             .ok_or(EscrowError::MathOverflow)?;
 
+        // Read all fields we need BEFORE mutating (satisfies borrow checker).
+        let agent_key = channel.agent;
+        let channel_id = channel.channel_id;
+        let bump = channel.bump;
+
         // SECURITY: mark as settled BEFORE any CPI transfers (reentrancy defense).
         // Even though Solana's runtime prevents true reentrancy, this is defense-in-
         // depth: the state is consistent before external calls are made.
         ctx.accounts.channel.settled = true;
 
         // The vault authority is the channel PDA, so it signs CPI transfers.
-        let agent_key = channel.agent;
-        let channel_id = channel.channel_id;
-        let bump = channel.bump;
         let signer_seeds: &[&[&[u8]]] =
             &[&[b"channel", agent_key.as_ref(), channel_id.as_ref(), &[bump]]];
 
@@ -139,7 +141,7 @@ pub mod escrow {
         if cumulative_amount > 0 {
             transfer(
                 CpiContext::new_with_signer(
-                    ctx.accounts.token_program.to_account_info(),
+                    ctx.accounts.token_program.key(),
                     Transfer {
                         from: ctx.accounts.vault.to_account_info(),
                         to: ctx.accounts.provider_token_account.to_account_info(),
@@ -155,7 +157,7 @@ pub mod escrow {
         if refund_amount > 0 {
             transfer(
                 CpiContext::new_with_signer(
-                    ctx.accounts.token_program.to_account_info(),
+                    ctx.accounts.token_program.key(),
                     Transfer {
                         from: ctx.accounts.vault.to_account_info(),
                         to: ctx.accounts.agent_token_account.to_account_info(),
@@ -169,7 +171,7 @@ pub mod escrow {
 
         // Empty vault — close it and return its rent to the agent.
         close_account(CpiContext::new_with_signer(
-            ctx.accounts.token_program.to_account_info(),
+            ctx.accounts.token_program.key(),
             CloseAccount {
                 account: ctx.accounts.vault.to_account_info(),
                 destination: ctx.accounts.agent.to_account_info(),
@@ -204,7 +206,7 @@ pub mod escrow {
         if amount > 0 {
             transfer(
                 CpiContext::new_with_signer(
-                    ctx.accounts.token_program.to_account_info(),
+                    ctx.accounts.token_program.key(),
                     Transfer {
                         from: ctx.accounts.vault.to_account_info(),
                         to: ctx.accounts.agent_token_account.to_account_info(),
@@ -217,7 +219,7 @@ pub mod escrow {
         }
 
         close_account(CpiContext::new_with_signer(
-            ctx.accounts.token_program.to_account_info(),
+            ctx.accounts.token_program.key(),
             CloseAccount {
                 account: ctx.accounts.vault.to_account_info(),
                 destination: ctx.accounts.agent.to_account_info(),

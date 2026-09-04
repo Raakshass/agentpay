@@ -1,22 +1,17 @@
-[toolchain]
-# Pin to match the anchor-lang dependency in the programs' Cargo.toml so local
-# and CI `anchor build` use the same CLI (avoids "anchor-cli X is not installed").
-anchor_version = "1.0.2"
-
 [features]
 resolution = true
 skip-lint = false
 
 [programs.devnet]
-escrow = "8vH1iEpbwe31WGqSGd9a8qkKh7SCHW8MsaSULVsxskRw"
-registry = "XGXadfKb7mru5wcr1yUZWSeBLVUY6NFDAriBUUMiLbk"
+escrow = "B42nssBXyLNK1y9YFZUwtzJcS8dzLYoTwony38YCTDiG"
+registry = "6WMY6ymJkcT6AxcifmE8uzT5ZYQ4okZspFubxXg3TptS"
 
 [programs.localnet]
-escrow = "8vH1iEpbwe31WGqSGd9a8qkKh7SCHW8MsaSULVsxskRw"
-registry = "XGXadfKb7mru5wcr1yUZWSeBLVUY6NFDAriBUUMiLbk"
+escrow = "B42nssBXyLNK1y9YFZUwtzJcS8dzLYoTwony38YCTDiG"
+registry = "6WMY6ymJkcT6AxcifmE8uzT5ZYQ4okZspFubxXg3TptS"
 
 [provider]
-cluster = "localnet"
+cluster = "devnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
