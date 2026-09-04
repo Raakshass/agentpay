@@ -26,10 +26,10 @@ export const config = {
   rpcUrl: resolveRpcUrl(),
   registryProgramId:
     process.env.NEXT_PUBLIC_REGISTRY_PROGRAM_ID ||
-    "XGXadfKb7mru5wcr1yUZWSeBLVUY6NFDAriBUUMiLbk",
+    "6WMY6ymJkcT6AxcifmE8uzT5ZYQ4okZspFubxXg3TptS",
   escrowProgramId:
     process.env.NEXT_PUBLIC_ESCROW_PROGRAM_ID ||
-    "8vH1iEpbwe31WGqSGd9a8qkKh7SCHW8MsaSULVsxskRw",
+    "B42nssBXyLNK1y9YFZUwtzJcS8dzLYoTwony38YCTDiG",
   usdcMint:
     process.env.NEXT_PUBLIC_USDC_MINT ||
     "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",

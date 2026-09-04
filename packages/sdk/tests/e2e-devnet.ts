@@ -50,7 +50,7 @@ import { createHash } from "crypto";
 const GATEWAY_URL = process.env["GATEWAY_URL"] ?? "http://localhost:4020";
 const RPC_URL = process.env["RPC_URL"] ?? "https://api.devnet.solana.com";
 const ESCROW_PROGRAM_ID = new PublicKey(
-  process.env["ESCROW_PROGRAM_ID"] ?? "8vH1iEpbwe31WGqSGd9a8qkKh7SCHW8MsaSULVsxskRw"
+  process.env["ESCROW_PROGRAM_ID"] ?? "B42nssBXyLNK1y9YFZUwtzJcS8dzLYoTwony38YCTDiG"
 );
 
 /**

@@ -52,7 +52,7 @@ import {
 
 /** Devnet + the program's `declare_id!`. Override via `programId` if needed. */
 export const DEFAULT_ESCROW_PROGRAM_ID = new PublicKey(
-  "8vH1iEpbwe31WGqSGd9a8qkKh7SCHW8MsaSULVsxskRw"
+  "B42nssBXyLNK1y9YFZUwtzJcS8dzLYoTwony38YCTDiG"
 );
 
 /** PDA seed prefix, matching the escrow program's `b"channel"`. */

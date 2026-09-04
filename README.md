@@ -73,8 +73,8 @@ This is a pnpm monorepo.
 
 | Program | Address |
 |---|---|
-| Escrow (state channel) | `8vH1iEpbwe31WGqSGd9a8qkKh7SCHW8MsaSULVsxskRw` |
-| Registry (provider catalog) | `XGXadfKb7mru5wcr1yUZWSeBLVUY6NFDAriBUUMiLbk` |
+| Escrow (state channel) | `B42nssBXyLNK1y9YFZUwtzJcS8dzLYoTwony38YCTDiG` |
+| Registry (provider catalog) | `6WMY6ymJkcT6AxcifmE8uzT5ZYQ4okZspFubxXg3TptS` |
 
 ---
 
